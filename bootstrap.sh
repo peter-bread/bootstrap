@@ -95,4 +95,4 @@ echo "Applying dotfiles..."
 
 # TODO: continue bootstrap script
 
-echo -e "\nRestart shell"
+echo -e "\nRestart your shell to make sure changes take effect."
