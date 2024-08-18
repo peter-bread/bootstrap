@@ -81,7 +81,18 @@ if [ ! -d "$dotfiles_dir" ]; then
   # git clone https://github.com/peter-bread/.dotfiles "$dotfiles_dir"
 else
   echo "Dotfiles repository already exists"
-  # TODO: add option to overwrite ???
+
+  read -rp "Do you wish to overwrite it? [y/N]: " confirm </dev/tty
+
+  confirm=$(echo "$confirm" | xargs)
+
+  if [[ $confirm =~ ^[Yy]$ ]]; then
+    echo "Overwriting dotfiles..."
+    # TODO: uncomment
+    #
+    # rm -rf "$dotfiles_dir"
+    # git clone https://github.com/peter-bread/.dotfiles "$dotfiles_dir"
+  fi
 fi
 
 echo "Applying dotfiles..."
