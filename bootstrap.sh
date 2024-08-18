@@ -33,7 +33,10 @@ fi
 echo "curl installed."
 
 # Prompt to confirm if the user is okay with the script potentially asking for root privileges
-read -rp "This script may request root privileges to [do some stuff...???]. Do you wish to proceed? [y/N]: " confirm
+read -rp "This script may request root privileges to [do some stuff...???]. Do you wish to proceed? [y/N]: " confirm </dev/tty
+
+confirm=$(echo "$confirm" | xargs)
+
 if [[ ! $confirm =~ ^[Yy]$ ]]; then
   echo "Aborting."
   exit 1
