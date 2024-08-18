@@ -48,7 +48,7 @@ if command_exists brew; then
   echo "Homebrew already installed"
 else
   echo "Installing Homebrew..."
-  /usr/bin/env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  NONINTERACTIVE=1 /usr/bin/env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   # check if installation was successful
   echo "Checking if Homebrew was installed successfully..."
