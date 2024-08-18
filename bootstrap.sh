@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # check if a command exists silently
-_command_exists() {
+command_exists() {
   command -v "$1" &>/dev/null
 }
 
@@ -17,7 +17,7 @@ echo "Changing into home directory"
 cd || exit 1
 
 echo "Checking for xcode command line tools..."
-if ! _command_exists xcode-select -p; then
+if ! command_exists xcode-select -p; then
   echo "xcode must be installed (run xcode-select --install)"
   xcode-select --install
 fi
@@ -25,7 +25,7 @@ echo "xcode command line tools installed."
 
 # make sure curl is installed to be able to run remotely
 echo "Checking for curl..."
-if ! _command_exists curl; then
+if ! command_exists curl; then
   echo "curl is required to execute this script remotely."
   echo "If curl is not available on this system, download the script to a USB drive and run it from there."
   exit 1
@@ -44,7 +44,7 @@ fi
 
 # check if Homebrew is already installed
 echo "Checking if Homebrew is already installed..."
-if _command_exists brew; then
+if command_exists brew; then
   echo "Homebrew already installed"
 else
   echo "Installing Homebrew..."
@@ -52,7 +52,7 @@ else
 
   # check if installation was successful
   echo "Checking if Homebrew was installed successfully..."
-  if _command_exists brew; then
+  if command_exists brew; then
     echo "Homebrew installed successfully"
   else
     echo "Homebrew installation failed"
@@ -72,7 +72,7 @@ echo "Upgrading Homebrew..."
 
 # ensure Git is installed
 echo "Checking if Git is already installed..."
-if _command_exists git; then
+if command_exists git; then
   echo "Git is already installed"
 else
   echo "Installing Git..."
@@ -80,7 +80,7 @@ else
 
   # check if installation was successful
   echo "Checking if Git was installed successfully..."
-  if _command_exists brew; then
+  if command_exists brew; then
     echo "Git installed successfully"
   else
     echo "Git installation failed"
