@@ -70,24 +70,6 @@ brew update
 echo "Upgrading Homebrew..."
 # brew upgrade
 
-# ensure Git is installed
-echo "Checking if Git is already installed..."
-if command_exists git; then
-  echo "Git is already installed"
-else
-  echo "Installing Git..."
-  brew install git
-
-  # check if installation was successful
-  echo "Checking if Git was installed successfully..."
-  if command_exists brew; then
-    echo "Git installed successfully"
-  else
-    echo "Git installation failed"
-    exit 1
-  fi
-fi
-
 dotfiles_dir="$HOME/.dotfiles" # TODO: add support for XDG
 
 # Make sure dotfiles repository exists
