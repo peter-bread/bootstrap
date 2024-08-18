@@ -13,6 +13,9 @@ fi
 
 echo "Staring bootstrap..."
 
+echo "Changing into home directory"
+cd || exit 1
+
 echo "Checking for xcode command line tools..."
 if ! _command_exists xcode-select -p; then
   echo "xcode must be installed (run xcode-select --install)"
