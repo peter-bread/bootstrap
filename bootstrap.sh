@@ -5,6 +5,15 @@ command_exists() {
   command -v "$1" &>/dev/null
 }
 
+OS=$(uname)
+
+if [[ "$OS" != "Darwin" ]]; then
+  echo "This script is only meant to run on MacOS."
+  echo "Should work on Linux in the future."
+  echo "No plans to work on windows"
+  exit 1
+fi
+
 # should only need root priveliges when necessary
 if [[ $EUID -eq 0 ]]; then
   echo "This script must NOT be run as root (DO NOT use sudo)"
