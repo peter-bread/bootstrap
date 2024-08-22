@@ -10,7 +10,7 @@ OS=$(uname)
 if [[ "$OS" != "Darwin" ]]; then
   echo "This script is only meant to run on MacOS."
   echo "Should work on Linux in the future."
-  echo "No plans to work on Windows"
+  echo "No plans to work on Windows."
   exit 1
 fi
 
