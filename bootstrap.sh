@@ -79,15 +79,15 @@ brew update
 echo "Upgrading Homebrew..."
 # brew upgrade
 
-dotfiles_dir="$HOME/.dotfiles" # TODO: add support for XDG
+dotfiles="$HOME/.dotfiles"
 
 # Make sure dotfiles repository exists
 echo "Ensuring dotfiles repository exists..."
-if [ ! -d "$dotfiles_dir" ]; then
+if [ ! -d "$dotfiles" ]; then
   echo "Cloning dotfiles repository..."
   # TODO: uncomment
   #
-  # git clone https://github.com/peter-bread/.dotfiles "$dotfiles_dir"
+  # git clone https://github.com/peter-bread/.dotfiles "$dotfiles"
 else
   echo "Dotfiles repository already exists"
 
@@ -99,17 +99,17 @@ else
     echo "Overwriting dotfiles..."
     # TODO: uncomment
     #
-    # rm -rf "$dotfiles_dir"
-    # git clone https://github.com/peter-bread/.dotfiles "$dotfiles_dir"
+    # rm -rf "$dotfiles"
+    # git clone https://github.com/peter-bread/.dotfiles "$dotfiles"
   fi
 fi
 
 echo "Applying dotfiles..."
 # cd "$dotfiles_dir"
 # if [ -f install.sh ]; then
-#   /bin/bash install.sh
+#   /usr/bin/env bash install.sh
 # else
-#   echo "No install.sh script found in $dotfiles_dir, Please ensure it exists"
+#   echo "No install.sh script found in $dotfiles, Please ensure it exists"
 #   exit 1
 # fi
 
