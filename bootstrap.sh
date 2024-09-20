@@ -118,8 +118,10 @@ else
   fi
 fi
 
+# this creates directories and symlinks to get config files to the right places
 echo "Applying dotfiles..."
-# cd "$dotfiles_dir"
+
+# cd "$dotfiles"
 # if [ -f install.sh ]; then
 #   /usr/bin/env bash install.sh
 # else
