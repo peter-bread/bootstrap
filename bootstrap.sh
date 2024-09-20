@@ -82,6 +82,19 @@ echo "Upgrading Homebrew..."
 
 dotfiles="$HOME/.dotfiles"
 
+# TODO: authenticate with git
+
+read -rp "Dotfiles is a private repo. Would you like to authenticate with GH CLI? (y/N): " confirm </dev/tty
+confirm=$(echo "$confirm" | xargs)
+
+if [[ $confirm =~ ^[Yy]$ ]]; then
+  echo "Prepare to setup github cli..."
+else
+  echo "no setup here"
+fi
+
+exit 1 # this is temporary
+
 # Make sure dotfiles repository exists
 echo "Ensuring dotfiles repository exists..."
 if [ ! -d "$dotfiles" ]; then
