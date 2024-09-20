@@ -129,6 +129,9 @@ echo "Applying dotfiles..."
 #   exit 1
 # fi
 
-# TODO: continue bootstrap script
+# install other software
+[ -f "$dotfiles/homebrew/Brewfile" ] &&
+  echo "install hahaha"
+# brew bundle install --file="$dotfiles/homebrew/Brewfile"
 
 echo -e "\nRestart your shell to make sure changes take effect."
