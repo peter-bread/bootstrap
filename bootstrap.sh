@@ -32,6 +32,7 @@ if ! command_exists xcode-select -p; then
 fi
 echo "xcode command line tools installed."
 
+# FIXME: won't run from USB
 # make sure curl is installed to be able to run remotely
 echo "Checking for curl..."
 if ! command_exists curl; then
