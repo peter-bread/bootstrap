@@ -7,6 +7,9 @@ export green="\e[32m"
 export yellow="\e[33m"
 export blue="\e[34m"
 
+export bold="\e[1m"
+export reset="\e[0m"
+
 # Set important environment variables -----------------------------------------
 
 # dotfiles
