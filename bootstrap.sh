@@ -104,7 +104,7 @@ while true; do
     echo -e "${green}Valid SSH key name!${default}"
     break
   else
-    echo -e "${red}Error: Invalid SSH key name! Can only contain: lowercase letters, digits, underscore, hyphens.${default}"
+    echo -e "${red}Error: Invalid SSH key name! Can only contain: lowercase letters, digits, underscores, hyphens.${default}"
     echo
   fi
 done
