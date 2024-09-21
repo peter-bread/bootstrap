@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Set colours -----------------------------------------------------------------
 
 export default="\e[39m"
@@ -97,9 +98,7 @@ echo
 echo -e "${yellow}${bold}WARNING: When asked if you would like to add an SSH key to your account, select SKIP.${default}${reset}"
 
 github_login
-
 github_add_ssh_key "$keyfile"
-
 github_reset_scope
 
 echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
