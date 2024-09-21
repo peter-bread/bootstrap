@@ -73,5 +73,5 @@ echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
 
 echo -e "${blue}Attempting to clone dotfiles...${default}"
 # TODO: check if dotfiles already exists and ask to override
-GIT_SSH_COMMAND="ssh -i ~/.ssh/${keyfile}" git clone git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
 # TODO: check if clone was successful
