@@ -30,6 +30,15 @@ function generate_ssh_key() {
 
 # Bootstrap -------------------------------------------------------------------
 
+OS=$(uname)
+
+if [[ $OS != "Darwin" ]]; then
+  echo "${red}Error: This script only works on MacOS.${default}"
+  exit 1
+fi
+
+echo -e "${blue}Starting bootstrap...${default}"
+
 echo -e "${blue}Changing into home directory...${default}"
 cd || exit 1
 
