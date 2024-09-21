@@ -105,6 +105,28 @@ github_reset_scope
 echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
 
 echo -e "${blue}Attempting to clone dotfiles...${default}"
-# TODO: check if dotfiles already exists and ask to override
-git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
-# TODO: check if clone was successful
+
+if [[ ! -d $DOTFILES ]]; then
+  git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+else
+  echo -e "${blue}Dotfiles repository already exists. Pulling latest changes...${default}"
+  cd "$DOTFILES" && git pull
+fi
+
+echo -e "${green}Dotfiles cloned!${default}"
+
+# change into dotfiles repo to install dotfiles
+cd "$DOTFILES" || exit 1
+
+if [[ -f $DOTFILES/install.sh ]]; then
+  echo -e "${blue}Installing dotfiles...${default}"
+  if ! bash "$DOTFILES"/install.sh; then
+    echo -e "${red}Error: Dotfiles installation failed!${default}"
+    exit 1
+  fi
+else
+  echo -e "${red}Error: No install.sh found in $DOTFILES!${default}"
+  exit 1
+fi
+
+echo -e "${green}Dotfiles installed successfully!${default}"
