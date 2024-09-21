@@ -28,6 +28,14 @@ function command_exists() {
   command -v "$1" &>/dev/null
 }
 
+function validate_ssh_key_name() {
+  if [[ $1 =~ ^[a-z0-9_-]+$ ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 function generate_ssh_key() {
   ssh-keygen -t ed25519 -f "$HOME/.ssh/${1}" -C "${2}"
 }
@@ -81,11 +89,21 @@ echo -e "${blue}Upgrading Homebrew...${default}"
 
 echo -e "${blue}Creating a new ed25519 SSH key pair for GitHub...${default}"
 
-# get filename and email for new github ssh key
-read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
-read -rp $'\e[33mEmail for SSH key: \e[39m' email
+# get valid filename for new github ssh key
+while true; do
+  read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
 
-# TODO: validate keyfile: CANNOT contain any spaces
+  if validate_ssh_key_name "$keyfile"; then
+    echo -e "${green}Valid SSH key name!${default}"
+    break
+  else
+    echo -e "${red}Error: Invalid SSH key name! Can only contain: lowercase letters, digits, underscore, hyphens.${default}"
+    echo
+  fi
+done
+
+# get email for new github ssh key
+read -rp $'\e[33mEmail for SSH key: \e[39m' email
 
 generate_ssh_key "$keyfile" "$email"
 
