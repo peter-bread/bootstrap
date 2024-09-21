@@ -154,3 +154,19 @@ else
 fi
 
 echo -e "${green}Dotfiles installed successfully!${default}"
+
+echo -e "${blue}Checking for Brewfile...${default}"
+
+if [[ -f $DOTFILES/homebrew/Brewfile ]]; then
+  echo -e "${green}Brewfile exists. Installing...${default}"
+  brew bundle install --file="$DOTFILES/homebrew/Brewfile"
+else
+  echo -e "${blue}Brewfile not found. Skipping...${default}"
+fi
+
+echo
+echo -e "${green}Bootstrap complete!${default}"
+echo
+echo -e "${blue}Restart your shell for changes to take effect.${default}"
+
+exit 0
