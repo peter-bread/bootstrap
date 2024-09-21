@@ -74,7 +74,14 @@ cd || exit 1
 if ! command_exists brew; then
   echo -e "${blue}Installing Homebrew...${default}"
   NONINTERACTIVE=1 /usr/bin/env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  # TODO: check if successful
+
+  # check if installation was successful
+  if command_exists /opt/homebrew/bin/brew; then
+    echo -e "${green}Homebrew installation successful!${default}"
+  else
+    echo -e "${red}Error: Homebrew installation failed!${default}"
+    exit 1
+  fi
 fi
 
 # set up homebrew in current shell
