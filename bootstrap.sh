@@ -31,6 +31,22 @@ function generate_ssh_key() {
   ssh-keygen -t ed25519 -f "$HOME/.ssh/${1}" -C "${2}"
 }
 
+# Web login to github. Automatically sets git protocol to ssh and requests
+# public_key scope so ssh keys can be added later.
+function github_login() {
+  gh auth login --hostname GitHub.com --git-protocol ssh --scopes "admin:public_key" --web
+}
+
+# Add ssh key to github account.
+function github_add_ssh_key() {
+  gh ssh-key add "${1}.pub" --title "$(whoami)@$(uname -n)" --type authentication
+}
+
+# Reset GH CLI auth token to minimum scope.
+function github_reset_scope() {
+  gh auth refresh --reset-scopes
+}
+
 # Bootstrap -------------------------------------------------------------------
 
 OS=$(uname)
@@ -49,6 +65,7 @@ cd || exit 1
 if ! command_exists brew; then
   echo -e "${blue}Installing Homebrew...${default}"
   NONINTERACTIVE=1 /usr/bin/env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # TODO: check if successful
 fi
 
 # set up homebrew in current shell
@@ -61,25 +78,29 @@ brew update
 echo -e "${blue}Upgrading Homebrew...${default}"
 # brew upgrade
 
-# get filename and email for new github ssh key
 echo -e "${blue}Creating a new ed25519 SSH key pair for GitHub...${default}"
 
+# get filename and email for new github ssh key
 read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
 read -rp $'\e[33mEmail for SSH key: \e[39m' email
-
-# =============================================================================
-# =========== TEMPORARY TO PREVENT ACCIDENTAL CHANGES TO MY SYSTEM ============
-# =============================================================================
-exit 1
 
 # TODO: validate keyfile: CANNOT contain any spaces
 
 generate_ssh_key "$keyfile" "$email"
 
-brew install gh
+if ! command_exists gh; then
+  brew install gh
+fi
 
-# login and add ssh key to github account
-gh auth login
+echo -e "${blue}Authenticating with GitHub via browser...${default}"
+echo
+echo -e "${yellow}${bold}WARNING: When asked if you would like to add an SSH key to your account, select SKIP.${default}${reset}"
+
+github_login
+
+github_add_ssh_key "$keyfile"
+
+github_reset_scope
 
 echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
 
