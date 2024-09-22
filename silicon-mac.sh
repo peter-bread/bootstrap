@@ -175,6 +175,17 @@ else
   echo -e "${blue}Brewfile not found. Skipping...${default}"
 fi
 
+# TODO: install other packages
+
+# mise
+mise install
+
+# sdkman
+
+# ghcup
+
+# rustup
+
 echo
 echo -e "${green}Bootstrap complete!${default}"
 echo
