@@ -206,9 +206,15 @@ notify "Starting software installation..."
 notify "Checking for Brewfile..."
 
 if [[ -f $DOTFILES/homebrew/Brewfile ]]; then
-  success "Brewfile exists."
-  notify "Installing packages from Brewfile..."
-  brew bundle install --file="$DOTFILES/homebrew/Brewfile"
+  success "Brewfile found!"
+
+  read -rp $'\e[33mWould you like to install packages from Brewfile (y/N): \e[39m' confirm
+
+  if [[ $confirm =~ ^[Yy]$ ]]; then
+    notify "Installing packages from Brewfile..."
+    brew bundle install --file="$DOTFILES/homebrew/Brewfile"
+  fi
+
 else
   notify "Brewfile not found. Skipping..."
 fi
