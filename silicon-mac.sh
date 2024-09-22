@@ -225,6 +225,7 @@ else
 fi
 
 # TODO: install other packages
+# TODO: add prompts to ask user if they want to install these packages
 
 # mise
 if ! command_exists mise; then
