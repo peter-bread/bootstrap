@@ -58,12 +58,27 @@ function github_reset_scope() {
 
 # Bootstrap ===================================================================
 
+# Checks ----------------------------------------------------------------------
+
+echo -e "${blue}Checking OS...${default}"
+
+# OS
 OS=$(uname)
 
 if [[ $OS != "Darwin" ]]; then
   echo "${red}Error: This script only works on MacOS.${default}"
   exit 1
 fi
+
+echo -e "${blue}Checking privileges...${default}"
+
+# Root privileges
+if [[ $EUID -eq 0 ]]; then
+  echo -e "${red}Error: this script should not be run as root. Please run it as a regular user.${default}"
+  exit 1
+fi
+
+# Start -----------------------------------------------------------------------
 
 echo -e "${blue}Starting bootstrap...${default}"
 
