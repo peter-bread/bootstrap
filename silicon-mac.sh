@@ -216,6 +216,10 @@ fi
 # TODO: install other packages
 
 # mise
+if ! command_exists mise; then
+  brew install mise
+fi
+
 mise install
 
 # sdkman
