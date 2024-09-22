@@ -29,11 +29,7 @@ function command_exists() {
 }
 
 function validate_ssh_key_name() {
-  if [[ $1 =~ ^[a-z0-9_-]+$ ]]; then
-    return 0
-  else
-    return 1
-  fi
+  [[ $1 =~ ^[a-z0-9_-]+$ ]]
 }
 
 function generate_ssh_key() {
@@ -43,12 +39,14 @@ function generate_ssh_key() {
 # Web login to github. Automatically sets git protocol to ssh and requests
 # public_key scope so ssh keys can be added later.
 function github_login() {
-  gh auth login --hostname GitHub.com --git-protocol ssh --scopes "admin:public_key" --web
+  gh auth login --hostname GitHub.com --git-protocol \
+    ssh --scopes "admin:public_key" --web
 }
 
 # Add ssh key to github account.
 function github_add_ssh_key() {
-  gh ssh-key add "${1}.pub" --title "$(whoami)@$(uname -n)" --type authentication
+  gh ssh-key add "${1}.pub" --title "$(whoami)@$(uname -n)" \
+    --type authentication
 }
 
 # Reset GH CLI auth token to minimum scope.
@@ -74,7 +72,8 @@ echo -e "${blue}Checking privileges...${default}"
 
 # Root privileges
 if [[ $EUID -eq 0 ]]; then
-  echo -e "${red}Error: this script should not be run as root. Please run it as a regular user.${default}"
+  echo -e "${red}Error: this script should not be run as root."
+  echo -e "Please run it as a regular user.${default}"
   exit 1
 fi
 
@@ -90,7 +89,8 @@ cd || exit 1
 # enure homebrew is installed
 if ! command_exists brew; then
   echo -e "${blue}Installing Homebrew...${default}"
-  NONINTERACTIVE=1 /usr/bin/env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  NONINTERACTIVE=1 /usr/bin/env bash -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   # check if installation was successful
   if command_exists /opt/homebrew/bin/brew; then
@@ -123,7 +123,8 @@ while true; do
     echo -e "${green}Valid SSH key name!${default}"
     break
   else
-    echo -e "${red}Error: Invalid SSH key name! Can only contain: lowercase letters, digits, underscores, hyphens.${default}"
+    echo -e "${red}Error: Invalid SSH key name!"
+    echo -e "Can only contain: lowercase letters, digits, underscores, hyphens.${default}"
     echo
   fi
 done
@@ -154,7 +155,8 @@ echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
 echo -e "${blue}Attempting to clone dotfiles...${default}"
 
 if [[ ! -d $DOTFILES ]]; then
-  git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+  git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
+    git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
 else
   echo -e "${blue}Dotfiles repository already exists. Pulling latest changes...${default}"
   cd "$DOTFILES" && git pull
