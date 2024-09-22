@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Set colours -----------------------------------------------------------------
+# Set colours =================================================================
 
 export default="\e[39m"
 export red="\e[0;31m"
@@ -11,7 +11,7 @@ export blue="\e[34m"
 export bold="\e[1m"
 export reset="\e[0m"
 
-# Set important environment variables -----------------------------------------
+# Set important environment variables =========================================
 
 # dotfiles
 export DOTFILES="$HOME/.dotfiles"
@@ -22,7 +22,7 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-# Utility functions -----------------------------------------------------------
+# Utility functions ===========================================================
 
 function command_exists() {
   command -v "$1" &>/dev/null
@@ -56,7 +56,7 @@ function github_reset_scope() {
   gh auth refresh --reset-scopes
 }
 
-# Bootstrap -------------------------------------------------------------------
+# Bootstrap ===================================================================
 
 OS=$(uname)
 
@@ -69,6 +69,8 @@ echo -e "${blue}Starting bootstrap...${default}"
 
 echo -e "${blue}Changing into home directory...${default}"
 cd || exit 1
+
+# Homebrew --------------------------------------------------------------------
 
 # enure homebrew is installed
 if ! command_exists brew; then
@@ -94,7 +96,9 @@ brew update
 echo -e "${blue}Upgrading Homebrew...${default}"
 # brew upgrade
 
-echo -e "${blue}Creating a new ed25519 SSH key pair for GitHub...${default}"
+# Git / GitHub ----------------------------------------------------------------
+
+echo -e "${blue}Setting up Git and GitHub...${default}"
 
 # get valid filename for new github ssh key
 while true; do
@@ -112,6 +116,8 @@ done
 # get email for new github ssh key
 read -rp $'\e[33mEmail for SSH key: \e[39m' email
 
+echo -e "${blue}Creating a new ed25519 SSH key pair for GitHub...${default}"
+
 generate_ssh_key "$keyfile" "$email"
 
 if ! command_exists gh; then
@@ -127,6 +133,8 @@ github_add_ssh_key "$keyfile"
 github_reset_scope
 
 echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
+
+# Dotfiles --------------------------------------------------------------------
 
 echo -e "${blue}Attempting to clone dotfiles...${default}"
 
@@ -155,6 +163,9 @@ fi
 
 echo -e "${green}Dotfiles installed successfully!${default}"
 
+# Software Installation -------------------------------------------------------
+
+echo -e "${blue}Starting software installation...${default}"
 echo -e "${blue}Checking for Brewfile...${default}"
 
 if [[ -f $DOTFILES/homebrew/Brewfile ]]; then
