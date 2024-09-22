@@ -164,6 +164,9 @@ github_login
 github_add_ssh_key "$keyfile"
 github_reset_scope
 
+unset -v keyfile
+unset -v email
+
 success "Should now be SSH authenticated with GitHub!"
 
 # Dotfiles --------------------------------------------------------------------
@@ -214,6 +217,8 @@ if [[ -f $DOTFILES/homebrew/Brewfile ]]; then
     notify "Installing packages from Brewfile..."
     brew bundle install --file="$DOTFILES/homebrew/Brewfile"
   fi
+
+  unset -v confirm
 
 else
   notify "Brewfile not found. Skipping..."
