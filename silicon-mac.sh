@@ -24,6 +24,22 @@ export XDG_STATE_HOME="$HOME/.local/state"
 
 # Utility functions ===========================================================
 
+function notify() {
+  echo -e "${blue}${1}${default}"
+}
+
+function success() {
+  echo -e "${green}${1}${default}"
+}
+
+function warn() {
+  echo -e "${yellow}${bold}${1}${default}${reset}"
+}
+
+function error() {
+  echo -e "${red}${1}${default}"
+}
+
 function command_exists() {
   command -v "$1" &>/dev/null
 }
@@ -58,73 +74,73 @@ function github_reset_scope() {
 
 # Checks ----------------------------------------------------------------------
 
-echo -e "${blue}Checking OS...${default}"
+notify "Checking OS..."
 
 # OS
 OS=$(uname)
 
 if [[ $OS != "Darwin" ]]; then
-  echo "${red}Error: This script only works on MacOS.${default}"
+  error "Error: This script only works on MacOS."
   exit 1
 fi
 
-echo -e "${blue}Checking privileges...${default}"
+notify "Checking privileges..."
 
 # Root privileges
 if [[ $EUID -eq 0 ]]; then
-  echo -e "${red}Error: this script should not be run as root."
-  echo -e "Please run it as a regular user.${default}"
+  error "Error: this script should not be run as root."
+  error "Please run it as a regular user."
   exit 1
 fi
 
 # Start -----------------------------------------------------------------------
 
-echo -e "${blue}Starting bootstrap...${default}"
+notify "Starting bootstrap..."
 
-echo -e "${blue}Changing into home directory...${default}"
+notify "Changing into home directory..."
 cd || exit 1
 
 # Homebrew --------------------------------------------------------------------
 
 # enure homebrew is installed
 if ! command_exists brew; then
-  echo -e "${blue}Installing Homebrew...${default}"
+  notify "Installing Homebrew..."
   NONINTERACTIVE=1 /usr/bin/env bash -c \
     "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   # check if installation was successful
   if command_exists /opt/homebrew/bin/brew; then
-    echo -e "${green}Homebrew installation successful!${default}"
+    success "Homebrew installation successful!"
   else
-    echo -e "${red}Error: Homebrew installation failed!${default}"
+    error "Error: Homebrew installation failed!"
     exit 1
   fi
 fi
 
 # set up homebrew in current shell
-echo -e "${blue}Setting up Homebrew in current shell...${default}"
+notify "Setting up Homebrew in current shell..."
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # update & upgrade Homebrew
-echo -e "${blue}Updating Homebrew...${default}"
+notify "Updating Homebrew..."
 brew update
-echo -e "${blue}Upgrading Homebrew...${default}"
+notify "Upgrading Homebrew..."
 # brew upgrade
 
 # Git / GitHub ----------------------------------------------------------------
 
-echo -e "${blue}Setting up Git and GitHub...${default}"
+notify "Setting up Git and GitHub..."
 
 # get valid filename for new github ssh key
 while true; do
   read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
 
   if validate_ssh_key_name "$keyfile"; then
-    echo -e "${green}Valid SSH key name!${default}"
+    success "Valid SSH key name!"
     break
   else
-    echo -e "${red}Error: Invalid SSH key name!"
-    echo -e "Can only contain: lowercase letters, digits, underscores, hyphens.${default}"
+    error "Error: Invalid SSH key name!"
+    error "Can only contain: lowercase letters, digits, underscores, hyphens."
     echo
   fi
 done
@@ -132,7 +148,7 @@ done
 # get email for new github ssh key
 read -rp $'\e[33mEmail for SSH key: \e[39m' email
 
-echo -e "${blue}Creating a new ed25519 SSH key pair for GitHub...${default}"
+notify "Creating a new ed25519 SSH key pair for GitHub..."
 
 generate_ssh_key "$keyfile" "$email"
 
@@ -140,56 +156,61 @@ if ! command_exists gh; then
   brew install gh
 fi
 
-echo -e "${blue}Authenticating with GitHub via browser...${default}"
+notify "Authenticating with GitHub via browser..."
 echo
-echo -e "${yellow}${bold}WARNING: When asked if you would like to add an SSH key to your account, select SKIP.${default}${reset}"
+warn "WARNING: When asked if you would like to add an SSH key to your account, select SKIP."
 
 github_login
 github_add_ssh_key "$keyfile"
 github_reset_scope
 
-echo -e "${green}Should now be SSH authenticated with GitHub!${default}"
+success "Should now be SSH authenticated with GitHub!"
 
 # Dotfiles --------------------------------------------------------------------
 
-echo -e "${blue}Attempting to clone dotfiles...${default}"
+notify "Attempting to clone dotfiles..."
 
 if [[ ! -d $DOTFILES ]]; then
   git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
     git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
 else
-  echo -e "${blue}Dotfiles repository already exists. Pulling latest changes...${default}"
+  notify "Dotfiles repository already exists. Pulling latest changes..."
   cd "$DOTFILES" && git pull
 fi
 
-echo -e "${green}Dotfiles cloned!${default}"
+success "Dotfiles cloned!"
 
 # change into dotfiles repo to install dotfiles
 cd "$DOTFILES" || exit 1
 
 if [[ -f $DOTFILES/install.sh ]]; then
-  echo -e "${blue}Installing dotfiles...${default}"
+  notify "Installing dotfiles..."
+  echo
+  echo
   if ! bash "$DOTFILES"/install.sh; then
-    echo -e "${red}Error: Dotfiles installation failed!${default}"
+    error "Error: Dotfiles installation failed!"
     exit 1
   fi
+  echo
+  echo
 else
-  echo -e "${red}Error: No install.sh found in $DOTFILES!${default}"
+  error "Error: No install.sh found in $DOTFILES!"
   exit 1
 fi
 
-echo -e "${green}Dotfiles installed successfully!${default}"
+success "Dotfiles installed successfully!"
 
 # Software Installation -------------------------------------------------------
 
-echo -e "${blue}Starting software installation...${default}"
-echo -e "${blue}Checking for Brewfile...${default}"
+notify "Starting software installation..."
+notify "Checking for Brewfile..."
 
 if [[ -f $DOTFILES/homebrew/Brewfile ]]; then
-  echo -e "${green}Brewfile exists. Installing...${default}"
+  success "Brewfile exists."
+  notify "Installing packages from Brewfile..."
   brew bundle install --file="$DOTFILES/homebrew/Brewfile"
 else
-  echo -e "${blue}Brewfile not found. Skipping...${default}"
+  notify "Brewfile not found. Skipping..."
 fi
 
 # TODO: install other packages
@@ -204,8 +225,8 @@ mise install
 # rustup
 
 echo
-echo -e "${green}Bootstrap complete!${default}"
+success "Bootstrap complete!"
 echo
-echo -e "${blue}Restart your shell for changes to take effect.${default}"
+notify "Restart your shell for changes to take effect."
 
 exit 0
