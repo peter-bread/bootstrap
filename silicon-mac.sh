@@ -205,27 +205,64 @@ success "Dotfiles installed successfully!"
 
 # Software Installation -------------------------------------------------------
 
+#  Brewfile - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 notify "Starting software installation..."
 notify "Checking for Brewfile..."
 
-if [[ -f $DOTFILES/homebrew/Brewfile ]]; then
-  success "Brewfile found!"
+brewfile_essential=false
+brewfile_full=false
 
-  read -rp $'\e[33mWould you like to install packages from Brewfile (y/N): \e[39m' confirm
+if [[ -f $DOTFILES/homebrew/Brewfile_essential ]]; then
+  brewfile_essential=true
+fi
+
+if [[ -f $DOTFILES/homebrew/Brewfile_full ]]; then
+  brewfile_full=true
+fi
+
+if [[ $brewfile_essential && $brewfile_full ]]; then
+  success "Two Brewfiles found!"
+
+  read -rp $'\e[33mWhich Brewfile would you like to use? (e)ssential | (f)ull | (n)either : \e[39m' confirm
+
+  if [[ $confirm =~ ^[Ee]$ ]]; then
+    notify "Installing packages from Brewfile..."
+    brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+  elif [[ $confirm =~ ^[Ff]$ ]]; then
+    notify "Installing packages from Brewfile..."
+    brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+  else
+    notify "Not using a Brewfile. Skipping..."
+  fi
+
+elif [[ $brewfile_essential ]]; then
+
+  read -rp $'\e[33mWould you like to install packages from Brewfile (essential) (y/N): \e[39m' confirm
 
   if [[ $confirm =~ ^[Yy]$ ]]; then
     notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile"
+    brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
   fi
 
-  unset -v confirm
+elif [[ $brewfile_full ]]; then
+  read -rp $'\e[33mWould you like to install packages from Brewfile (full) (y/N): \e[39m' confirm
+
+  if [[ $confirm =~ ^[Yy]$ ]]; then
+    notify "Installing packages from Brewfile..."
+    brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+  fi
 
 else
   notify "Brewfile not found. Skipping..."
 fi
 
+unset -v confirm brewfile_essential brewfile_full
+
 # TODO: install other packages
 # TODO: add prompts to ask user if they want to install these packages
+
+#  Other - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # mise
 if ! command_exists mise; then
