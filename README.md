@@ -12,5 +12,5 @@ Assumes `curl` is installed by default.
 <!-- markdownlint-disable MD013 -->
 
 ```sh
-curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/bootstrap.sh | bash
+curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh | bash
 ```
