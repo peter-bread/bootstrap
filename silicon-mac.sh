@@ -58,8 +58,8 @@ function generate_ssh_key() {
 # Web login to github. Automatically sets git protocol to ssh and requests
 # public_key scope so ssh keys can be added later.
 function github_login() {
-  gh auth login --hostname GitHub.com --git-protocol \
-    ssh --scopes "admin:public_key" --web
+  gh auth login --hostname GitHub.com \
+    --git-protocol ssh --scopes "admin:public_key" --web
 }
 
 # Add ssh key to github account.
@@ -186,7 +186,8 @@ success "Should now be SSH authenticated with GitHub!"
 notify "Attempting to clone dotfiles..."
 
 if [[ ! -d $DOTFILES ]]; then
-  git clone -c core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
+  git clone \
+    --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
     git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
 else
   notify "Dotfiles repository already exists. Pulling latest changes..."
