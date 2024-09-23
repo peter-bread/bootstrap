@@ -285,6 +285,8 @@ fi
 mise install
 
 # sdkman
+curl -s "https://get.sdkman.io?rcupdate=false" | bash
+# TODO: install LTS versions: 8, 11, 17, 21
 
 # ghcup
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org |
