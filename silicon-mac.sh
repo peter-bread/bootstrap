@@ -86,6 +86,8 @@ if [[ $OS != "Darwin" ]]; then
   exit 1
 fi
 
+success "OS: ${OS}. OK!"
+
 notify "Checking privileges..."
 
 # Root privileges
@@ -95,16 +97,20 @@ if [[ $EUID -eq 0 ]]; then
   exit 1
 fi
 
+success "Running as regular user!"
+
 # Start -----------------------------------------------------------------------
 
-notify "Starting bootstrap..."
+notify "${bold}Starting bootstrap...${reset}"
 
 notify "Changing into home directory..."
 cd || exit 1
 
 # Homebrew --------------------------------------------------------------------
 
-# enure homebrew is installed
+notify "Checking if Homebrew is installed..."
+
+# ensure homebrew is installed
 if ! command_exists brew; then
   notify "Installing Homebrew..."
   NONINTERACTIVE=1 /usr/bin/env bash -c \
@@ -118,6 +124,8 @@ if ! command_exists brew; then
     exit 1
   fi
 fi
+
+success "Homebrew is installed!"
 
 # set up homebrew in current shell
 notify "Setting up Homebrew in current shell..."
@@ -133,6 +141,8 @@ notify "Upgrading Homebrew..."
 
 notify "Setting up Git and GitHub..."
 
+notify "Requesting key filename and email for GitHub SSH key..."
+
 # get valid filename for new github ssh key
 while true; do
   read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
@@ -143,7 +153,6 @@ while true; do
   else
     error "Error: Invalid SSH key name!"
     error "Can only contain: lowercase letters, digits, underscores, hyphens."
-    echo
   fi
 done
 
