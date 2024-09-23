@@ -287,6 +287,16 @@ mise install
 # sdkman
 
 # ghcup
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org |
+  BOOTSTRAP_HASKELL_NONINTERACTIVE=1 \
+    BOOTSTRAP_HASKELL_GHC_VERSION="recommended" \
+    BOOTSTRAP_HASKELL_CABAL_VERSION="recommended" \
+    BOOTSTRAP_HASKELL_STACK_VERSION="recommended" \
+    BOOTSTRAP_HASKELL_HLS_VERSION="recommended" \
+    sh
+
+curl -sSf https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/scripts/shell-completions/zsh \
+  >"$ZSH_COMPLETIONS/_ghcup"
 
 # rustup
 
