@@ -89,7 +89,17 @@ fi
 
 success "OS: ${OS}. OK!"
 
-notify "Checking privileges..."
+# CPU Architecture
+notify "Checking CPU Architecture..."
+
+ARCH=$(uname -s)
+
+if [[ $ARCH != *"arm"* ]]; then
+  error "Error: This script only works on arm64."
+  exit 1
+fi
+
+success "ARCH: ${ARCH}. OK!"
 
 # Root privileges
 if [[ $EUID -eq 0 ]]; then
