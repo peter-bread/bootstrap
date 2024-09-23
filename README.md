@@ -1,5 +1,7 @@
 # Bootstrap
 
+Collection of bootstrap scripts to set up on different systems with minimal effort.
+
 > [!WARNING]
 > Dotfiles repo is private.
 >
