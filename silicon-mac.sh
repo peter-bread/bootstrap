@@ -311,7 +311,7 @@ source "$HOME/.cargo/env"
 
 rustup completions zsh >"$ZSH_COMPLETIONS"/_rustup
 
-# Finishing Up ================================================================
+# Finishing Up ----------------------------------------------------------------
 
 echo
 success "Bootstrap complete!"
