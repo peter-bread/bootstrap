@@ -302,7 +302,13 @@ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org |
 curl -sSf https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/scripts/shell-completions/zsh \
   >"$ZSH_COMPLETIONS/_ghcup"
 
-# rustup
+# rustup - - - - - - - - - - - - - - - - - - - - - - - - - -
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |
+  sh -s -- --no-modify-path -y
+
+source "$HOME/.cargo/env"
+
+rustup completions zsh >"$ZSH_COMPLETIONS"/_rustup
 
 echo
 success "Bootstrap complete!"
