@@ -22,6 +22,8 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 
+export COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
+
 # Utility functions ===========================================================
 
 function notify() {
@@ -263,6 +265,8 @@ unset -v confirm brewfile_essential brewfile_full
 # TODO: add prompts to ask user if they want to install these packages
 
 #  Other - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+mkdir -p "$COMPLETIONS"
 
 # mise
 if ! command_exists mise; then
