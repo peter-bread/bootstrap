@@ -22,7 +22,7 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-export COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
+export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
 
 # Utility functions ===========================================================
 
@@ -266,7 +266,7 @@ unset -v confirm brewfile_essential brewfile_full
 
 #  Other - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-mkdir -p "$COMPLETIONS"
+mkdir -p "$ZSH_COMPLETIONS"
 
 # mise
 if ! command_exists mise; then
