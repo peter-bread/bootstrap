@@ -323,6 +323,10 @@ source "$HOME/.cargo/env"
 
 rustup completions zsh >"$ZSH_COMPLETIONS"/_rustup
 
+# neovim - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+nvim --headless '+Lazy! restore' +qa
+
 # Finishing Up ----------------------------------------------------------------
 
 echo
