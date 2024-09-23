@@ -77,10 +77,10 @@ function github_reset_scope() {
 
 # Checks ----------------------------------------------------------------------
 
-notify "Checking OS..."
+# Operating System
+notify "Checking Operating System..."
 
-# OS
-OS=$(uname)
+OS=$(uname -n)
 
 if [[ $OS != "Darwin" ]]; then
   error "Error: This script only works on MacOS."
@@ -102,6 +102,8 @@ fi
 success "ARCH: ${ARCH}. OK!"
 
 # Root privileges
+notify "Checking privileges..."
+
 if [[ $EUID -eq 0 ]]; then
   error "Error: this script should not be run as root."
   error "Please run it as a regular user."
