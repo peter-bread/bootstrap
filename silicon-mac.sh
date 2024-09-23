@@ -275,6 +275,7 @@ unset -v confirm brewfile_essential brewfile_full
 
 #  Other - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# create directory to store user-specific zsh completions
 mkdir -p "$ZSH_COMPLETIONS"
 
 # mise
