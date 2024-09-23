@@ -217,7 +217,7 @@ success "Dotfiles installed successfully!"
 
 # Software Installation -------------------------------------------------------
 
-#  Brewfile - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Brewfile - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 notify "Starting software installation..."
 notify "Checking for Brewfile..."
@@ -274,23 +274,23 @@ unset -v confirm brewfile_essential brewfile_full
 # TODO: install other packages
 # TODO: add prompts to ask user if they want to install these packages
 
-#  Other - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Other - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # create directory to store user-specific zsh completions
 mkdir -p "$ZSH_COMPLETIONS"
 
-# mise
+# mise - - - - - - - - - - - - - - - - - - - - - - - - - -
 if ! command_exists mise; then
   brew install mise
 fi
 
 mise install
 
-# sdkman
+# sdkman - - - - - - - - - - - - - - - - - - - - - - - - -
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
 # TODO: install LTS versions: 8, 11, 17, 21
 
-# ghcup
+# ghcup - - - - - - - - - - - - - - - - - - - - - - - - - -
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org |
   BOOTSTRAP_HASKELL_NONINTERACTIVE=1 \
     BOOTSTRAP_HASKELL_GHC_VERSION="recommended" \
@@ -309,6 +309,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |
 source "$HOME/.cargo/env"
 
 rustup completions zsh >"$ZSH_COMPLETIONS"/_rustup
+
+# Finishing Up ================================================================
 
 echo
 success "Bootstrap complete!"
