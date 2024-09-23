@@ -293,6 +293,7 @@ unset -v confirm brewfile_essential brewfile_full
 mkdir -p "$ZSH_COMPLETIONS"
 
 # mise - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 if ! command_exists mise; then
   brew install mise
 fi
@@ -300,10 +301,12 @@ fi
 mise install
 
 # sdkman - - - - - - - - - - - - - - - - - - - - - - - - -
+
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
 # TODO: install LTS versions: 8, 11, 17, 21
 
 # ghcup - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org |
   BOOTSTRAP_HASKELL_NONINTERACTIVE=1 \
     BOOTSTRAP_HASKELL_GHC_VERSION="recommended" \
@@ -316,6 +319,7 @@ curl -sSf https://raw.githubusercontent.com/haskell/ghcup-hs/refs/heads/master/s
   >"$ZSH_COMPLETIONS/_ghcup"
 
 # rustup - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |
   sh -s -- --no-modify-path -y
 
