@@ -80,7 +80,7 @@ function github_reset_scope() {
 # Operating System
 notify "Checking Operating System..."
 
-OS=$(uname -n)
+OS=$(uname -s)
 
 if [[ $OS != "Darwin" ]]; then
   error "Error: This script only works on MacOS."
@@ -92,7 +92,7 @@ success "OS: ${OS}. OK!"
 # CPU Architecture
 notify "Checking CPU Architecture..."
 
-ARCH=$(uname -s)
+ARCH=$(uname -m)
 
 if [[ $ARCH != *"arm"* ]]; then
   error "Error: This script only works on arm64."
