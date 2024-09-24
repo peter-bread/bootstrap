@@ -345,7 +345,7 @@ git clone \
 
 # launch without ui
 # install plugins
-# load mason tool installer and install packages synchronously
+# load mason tool installer and install packages synchronously (see nvim config)
 # quit
 
 nvim --headless \
