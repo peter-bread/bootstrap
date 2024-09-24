@@ -44,7 +44,7 @@ function error() {
 }
 
 function command_exists() {
-  command -v "$1" &>/dev/null
+  command -v "${1}" &>/dev/null
 }
 
 function validate_ssh_key_name() {
@@ -188,8 +188,7 @@ github_login
 github_add_ssh_key "$keyfile"
 github_reset_scope
 
-unset -v keyfile
-unset -v email
+unset -v keyfile email
 
 success "Should now be SSH authenticated with GitHub!"
 
