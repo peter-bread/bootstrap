@@ -328,7 +328,10 @@ rustup completions zsh >"$ZSH_COMPLETIONS"/_rustup
 
 # neovim - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-nvim --headless '+Lazy! restore' +qa
+nvim --headless \
+  '+Lazy! restore' \
+  '+Lazy! load mason-tool-installer.nvim' \
+  +qa
 
 # Finishing Up ----------------------------------------------------------------
 
