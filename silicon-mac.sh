@@ -188,7 +188,18 @@ github_login
 github_add_ssh_key "$keyfile"
 github_reset_scope
 
-unset -v keyfile email
+unset -v email
+
+ssh -i "$HOME/.ssh/${keyfile}" -T git@github.com
+
+exit_code="$?"
+
+if [[ $exit_code != 1 ]]; then
+  error "Error: Not authenticated with GutHub!"
+  exit 1
+fi
+
+unset -v exit_code
 
 success "Should now be SSH authenticated with GitHub!"
 
@@ -339,6 +350,8 @@ nvim --headless \
   +qa
 
 # Finishing Up ----------------------------------------------------------------
+
+unset -v keyfile
 
 echo
 success "Bootstrap complete!"
