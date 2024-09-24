@@ -216,7 +216,7 @@ else
   cd "$DOTFILES" && git pull
 fi
 
-success "Dotfiles cloned!"
+success "Dotfiles repo cloned and up to date!"
 
 # change into dotfiles repo to install dotfiles
 cd "$DOTFILES" || exit 1
