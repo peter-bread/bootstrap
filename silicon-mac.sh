@@ -201,7 +201,7 @@ fi
 
 unset -v exit_code
 
-success "Should now be SSH authenticated with GitHub!"
+success "SSH authenticated with GitHub!"
 
 # Dotfiles --------------------------------------------------------------------
 
