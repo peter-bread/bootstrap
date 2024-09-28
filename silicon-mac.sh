@@ -25,6 +25,9 @@ export XDG_STATE_HOME="$HOME/.local/state"
 # zsh
 export ZSH_COMPLETIONS="$XDG_DATA_HOME/zsh/completions"
 
+# gh cli
+export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
+
 # Utility functions ===========================================================
 
 function notify() {
