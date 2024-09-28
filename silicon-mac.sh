@@ -310,6 +310,8 @@ fi
 
 mise install
 
+eval "$(mise hook-env -s zsh)" # make mise binaries available in this script
+
 # sdkman - - - - - - - - - - - - - - - - - - - - - - - - -
 
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
