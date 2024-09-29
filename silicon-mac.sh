@@ -16,6 +16,9 @@ export reset="\e[0m"
 # dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
+# development
+export DEVELOPER="$HOME/Developer"
+
 # xdg
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
