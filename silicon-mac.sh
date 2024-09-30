@@ -355,10 +355,10 @@ git clone \
   --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
   git@github.com:peter-bread/peter.nvim.git "$XDG_CONFIG_HOME/nvim"
 
-# launch without ui
-# install plugins
-# load mason tool installer and install packages synchronously (see nvim config)
-# quit
+# 1. launch without ui
+# 2. install plugins
+# 3. load mason tool installer and install packages synchronously (see nvim config)
+# 4. quit
 
 nvim --headless \
   '+Lazy! restore' \
