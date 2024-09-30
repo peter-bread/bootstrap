@@ -347,6 +347,10 @@ rustup completions zsh >"$ZSH_COMPLETIONS/_rustup"
 
 # neovim - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+if ! command_exists nvim; then
+  brew install neovim
+fi
+
 git clone \
   --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
   git@github.com:peter-bread/peter.nvim.git "$XDG_CONFIG_HOME/nvim"
