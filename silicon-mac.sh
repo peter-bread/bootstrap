@@ -34,11 +34,15 @@ export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
 # Utility functions ===========================================================
 
 function notify() {
-  echo -e "${blue}${1}${default}"
+  if [[ $quiet -eq 0 ]]; then
+    echo -e "${blue}${1}${default}"
+  fi
 }
 
 function success() {
-  echo -e "${green}${1}${default}"
+  if [[ $quiet -eq 0 ]]; then
+    echo -e "${green}${1}${default}"
+  fi
 }
 
 function warn() {
@@ -90,6 +94,7 @@ function show_help() {
   echo "  -e <value>, --email[=<value>]             Specify email for GitHub SSH key"
   echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
   echo "  -b <value>, --brewfile[=<value>]          Which Brewfile to use ((f)ull | (e)ssential | (n)one)"
+  echo "  -q, --quiet                               Suppress non-error output"
 }
 
 # Bootstrap ===================================================================
@@ -99,6 +104,7 @@ function show_help() {
 email=""
 identity=""
 brewfile=""
+quiet=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -189,6 +195,12 @@ while [[ $# -gt 0 ]]; do
       error "Error: --brewfile requires a non-empty argument." >&2
       exit 1
     fi
+    shift
+    ;;
+
+  # quiet
+  -q | --quiet)
+    quiet=1
     shift
     ;;
   esac
