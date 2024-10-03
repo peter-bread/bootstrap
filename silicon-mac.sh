@@ -86,18 +86,58 @@ function show_help() {
   echo "  bash <script> [options]                   Run downloaded script"
   echo
   echo "Options:"
-  echo "  -h, --help        Display this help and exit"
+  echo "  -h, --help                    Display this help and exit"
+  echo "  -e <value>                    Specify email for github ssh key"
+  echo "  -e=<value>                    Specify email for github ssh key"
+  echo "  --email <value>               Specify email for github ssh key"
+  echo "  --email=<value>               Specify email for github ssh key"
 }
 
 # Bootstrap ===================================================================
 
 # Parse Options ---------------------------------------------------------------
 
+email=""
+
 while [[ $# -gt 0 ]]; do
   case $1 in
   -h | --help)
     show_help
     exit 0
+    ;;
+  -e)
+    if [[ -n $2 && $2 != -* ]]; then
+      email=$2
+      shift 2
+    else
+      error "Error: -e requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --email)
+    if [[ -n $2 && $2 != -* ]]; then
+      email=$2
+      shift 2
+    else
+      error "Error: --email requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  -e=*)
+    email="${1#-e=}"
+    if [[ -z $email ]]; then
+      error "Error: -e requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
+    ;;
+  --email=*)
+    email="${1#--email=}"
+    if [[ -z $email ]]; then
+      error "Error: --email requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
     ;;
   esac
 done
@@ -196,8 +236,15 @@ while true; do
   fi
 done
 
-# get email for new github ssh key
-read -rp $'\e[33mEmail for SSH key: \e[39m' email
+if [[ -n $email ]]; then
+  success "Email passed in on command line. Skipping..."
+else
+  # get email for new github ssh key
+  read -rp $'\e[33mEmail for SSH key: \e[39m' email
+  # TODO: create loop to validate email address
+  # for now this will just be making sure it is non-empty
+  # later can extend to containing @ etc
+fi
 
 notify "Creating a new ed25519 SSH key pair for GitHub..."
 
