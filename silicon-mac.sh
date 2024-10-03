@@ -34,19 +34,23 @@ export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
 # Utility functions ===========================================================
 
 function notify() {
-  echo -e "${blue}${1}${default}"
+  if [[ $quiet -eq 0 ]]; then
+    echo -e "${blue}${1}${default}"
+  fi
 }
 
 function success() {
-  echo -e "${green}${1}${default}"
+  if [[ $quiet -eq 0 ]]; then
+    echo -e "${green}${1}${default}"
+  fi
 }
 
 function warn() {
-  echo -e "${yellow}${bold}${1}${default}${reset}"
+  echo -e "${yellow}${bold}${1}${default}${reset}" >&2
 }
 
 function error() {
-  echo -e "${red}${1}${default}"
+  echo -e "${red}${1}${default}" >&2
 }
 
 function command_exists() {
@@ -64,7 +68,7 @@ function generate_ssh_key() {
 # Web login to github. Automatically sets git protocol to ssh and requests
 # public_key scope so ssh keys can be added later.
 function github_login() {
-  gh auth login --hostname GitHub.com \
+  gh auth login --hostname GitHub.com --skip-ssh-key \
     --git-protocol ssh --scopes "admin:public_key" --web
 }
 
@@ -79,7 +83,173 @@ function github_reset_scope() {
   gh auth refresh --reset-scopes
 }
 
+function show_help() {
+  echo "Usage:"
+  echo "  curl -sL <link> | bash [ -s -- [options] ]    Download & run script"
+  echo "  cat <script> | bash [ -s -- [options] ]       Run downloaded script"
+  echo "  bash <script> [options]                       Run downloaded script"
+  echo
+  echo "Options:"
+  echo "  -h, --help                                Display this help and exit"
+  echo "  -e <value>, --email[=<value>]             Specify email for GitHub SSH key"
+  echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
+  echo "  -b <value>, --brewfile[=<value>]          Which Brewfile to use ((f)ull | (e)ssential | (n)one)"
+  echo "  -q, --quiet                               Suppress non-error output"
+  echo "  --no-dotfiles                             Don't install or apply dotfiles"
+}
+
 # Bootstrap ===================================================================
+
+# Parse Options ---------------------------------------------------------------
+
+email=""
+identity=""
+brewfile=""
+quiet=0
+no_dotfiles=0
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  # help
+  -h | --help)
+    show_help
+    exit 0
+    ;;
+
+  # email
+  -e)
+    if [[ -n $2 && $2 != -* ]]; then
+      email=$2
+      shift 2
+    else
+      error "Error: -e requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --email)
+    if [[ -n $2 && $2 != -* ]]; then
+      email=$2
+      shift 2
+    else
+      error "Error: --email requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --email=*)
+    email="${1#--email=}"
+    if [[ -z $email ]]; then
+      error "Error: --email requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
+    ;;
+
+  # identity
+  -i)
+    if [[ -n $2 && $2 != -* ]]; then
+      identity=$2
+      shift 2
+    else
+      error "Error: -i requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --identity)
+    if [[ -n $2 && $2 != -* ]]; then
+      identity=$2
+      shift 2
+    else
+      error "Error: --identity requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --identity=*)
+    identity="${1#--identity=}"
+    if [[ -z $identity ]]; then
+      error "Error: --identity requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
+    ;;
+
+  # brewfile
+  -b)
+    if [[ -n $2 && $2 != -* ]]; then
+      brewfile=$2
+      shift 2
+    else
+      error "Error: -b requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --brewfile)
+    if [[ -n $2 && $2 != -* ]]; then
+      brewfile=$2
+      shift 2
+    else
+      error "Error: --brewfile requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --brewfile=*)
+    brewfile="${1#--brewfile=}"
+    if [[ -z $brewfile ]]; then
+      error "Error: --brewfile requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
+    ;;
+
+  # quiet
+  -q | --quiet)
+    quiet=1
+    shift
+    ;;
+
+  # no dotfiles
+  --no-dotfiles)
+    no_dotfiles=1
+    shift
+    ;;
+  *)
+    error "Error: unrecognised option: $1"
+    exit 1
+    ;;
+  esac
+done
+
+# Validate Options ------------------------------------------------------------
+
+if [[ -n $identity ]]; then
+  if ! validate_ssh_key_name "$identity"; then
+    error "Error: Invalid SSH key name!"
+    error "Can only contain: lowercase letters, digits, underscores, hyphens."
+    exit 1
+  fi
+fi
+
+if [[ -n $brewfile ]]; then
+  case $brewfile in
+  f | F | full)
+    brewfile="f"
+    ;;
+  e | E | essential)
+    brewfile="e"
+    ;;
+  n | N | none)
+    brewfile="n"
+    ;;
+  *)
+    brewfile="invalid"
+    ;;
+  esac
+
+  if [[ $brewfile == "invalid" ]]; then
+    error "Error: invalid Brewfile!"
+    error "Accepted values: [ f | F | full ]; [ e | E | essential ]; [ n | N | none ]"
+    exit 1
+  fi
+fi
 
 # Checks ----------------------------------------------------------------------
 
@@ -162,41 +332,52 @@ notify "Setting up Git and GitHub..."
 
 notify "Requesting key filename and email for GitHub SSH key..."
 
-# get valid filename for new github ssh key
-while true; do
-  read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
+if [[ -n $identity ]]; then
+  success "SSH identity file name passed in on command line. Skipping..."
+else
 
-  if validate_ssh_key_name "$keyfile"; then
-    success "Valid SSH key name!"
-    break
-  else
-    error "Error: Invalid SSH key name!"
-    error "Can only contain: lowercase letters, digits, underscores, hyphens."
-  fi
-done
+  # get valid filename for new github ssh key
+  while true; do
+    read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' identity
 
-# get email for new github ssh key
-read -rp $'\e[33mEmail for SSH key: \e[39m' email
+    if validate_ssh_key_name "$identity"; then
+      success "Valid SSH key name!"
+      break
+    else
+      error "Error: Invalid SSH key name!"
+      error "Can only contain: lowercase letters, digits, underscores, hyphens."
+    fi
+  done
+
+fi
+
+if [[ -n $email ]]; then
+  success "Email passed in on command line. Skipping..."
+else
+  # get email for new github ssh key
+  read -rp $'\e[33mEmail for SSH key: \e[39m' email
+  # TODO: create loop to validate email address
+  # for now this will just be making sure it is non-empty
+  # later can extend to containing @ etc
+fi
 
 notify "Creating a new ed25519 SSH key pair for GitHub..."
 
-generate_ssh_key "$keyfile" "$email"
+generate_ssh_key "$identity" "$email"
 
 if ! command_exists gh; then
   brew install gh
 fi
 
 notify "Authenticating with GitHub via browser..."
-echo
-warn "WARNING: When asked if you would like to add an SSH key to your account, select SKIP."
 
 github_login
-github_add_ssh_key "$keyfile"
+github_add_ssh_key "$identity"
 github_reset_scope
 
 unset -v email
 
-ssh -i "$HOME/.ssh/${keyfile}" -T git@github.com
+ssh -i "$HOME/.ssh/${identity}" -T git@github.com
 
 exit_code="$?"
 
@@ -211,38 +392,44 @@ success "SSH authenticated with GitHub!"
 
 # Dotfiles --------------------------------------------------------------------
 
-notify "Attempting to clone dotfiles..."
-
-if [[ ! -d $DOTFILES ]]; then
-  git clone \
-    --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
-    git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+if [[ $no_dotfiles -eq 1 ]]; then
+  notify "Chose to not install dotfiles. Skipping..."
 else
-  notify "Dotfiles repository already exists. Pulling latest changes..."
-  cd "$DOTFILES" && git pull
-fi
 
-success "Dotfiles repo cloned and up to date!"
+  notify "Attempting to clone dotfiles..."
 
-# change into dotfiles repo to install dotfiles
-cd "$DOTFILES" || exit 1
+  if [[ ! -d $DOTFILES ]]; then
+    git clone \
+      --config core.sshCommand="ssh -i ~/.ssh/${identity}" \
+      git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+  else
+    notify "Dotfiles repository already exists. Pulling latest changes..."
+    cd "$DOTFILES" && git pull
+  fi
 
-if [[ -f $DOTFILES/install.sh ]]; then
-  notify "Installing dotfiles..."
-  echo
-  echo
-  if ! bash "$DOTFILES"/install.sh; then
-    error "Error: Dotfiles installation failed!"
+  success "Dotfiles repo cloned and up to date!"
+
+  # change into dotfiles repo to install dotfiles
+  cd "$DOTFILES" || exit 1
+
+  if [[ -f $DOTFILES/install.sh ]]; then
+    notify "Installing dotfiles..."
+    echo
+    echo
+    if ! bash "$DOTFILES"/install.sh; then
+      error "Error: Dotfiles installation failed!"
+      exit 1
+    fi
+    echo
+    echo
+  else
+    error "Error: No install.sh found in $DOTFILES!"
     exit 1
   fi
-  echo
-  echo
-else
-  error "Error: No install.sh found in $DOTFILES!"
-  exit 1
-fi
 
-success "Dotfiles installed successfully!"
+  success "Dotfiles installed successfully!"
+
+fi
 
 # Software Installation -------------------------------------------------------
 
@@ -262,43 +449,74 @@ if [[ -f $DOTFILES/homebrew/Brewfile_full ]]; then
   brewfile_full=true
 fi
 
-if [[ $brewfile_essential && $brewfile_full ]]; then
-  success "Two Brewfiles found!"
-
-  read -rp $'\e[33mWhich Brewfile would you like to use? (e)ssential | (f)ull | (n)either : \e[39m' confirm
-
-  if [[ $confirm =~ ^[Ee]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
-  elif [[ $confirm =~ ^[Ff]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
-  else
+if [[ -n $brewfile ]]; then
+  case $brewfile in
+  f)
+    if [[ $brewfile_full == true ]]; then
+      notify "Installing packages from Brewfile (full)..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+    else
+      error "Error: Brewfile not found!"
+      exit 1
+    fi
+    ;;
+  e)
+    if [[ $brewfile_essential == true ]]; then
+      notify "Installing packages from Brewfile (essential)..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+    else
+      error "Error: Brewfile not found!"
+      exit 1
+    fi
+    ;;
+  n)
     notify "Not using a Brewfile. Skipping..."
-  fi
-
-elif [[ $brewfile_essential ]]; then
-
-  read -rp $'\e[33mWould you like to install packages from Brewfile (essential) (y/N): \e[39m' confirm
-
-  if [[ $confirm =~ ^[Yy]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
-  fi
-
-elif [[ $brewfile_full ]]; then
-  read -rp $'\e[33mWould you like to install packages from Brewfile (full) (y/N): \e[39m' confirm
-
-  if [[ $confirm =~ ^[Yy]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
-  fi
-
+    ;;
+  esac
 else
-  notify "Brewfile not found. Skipping..."
+
+  if [[ $brewfile_essential && $brewfile_full ]]; then
+    success "Two Brewfiles found!"
+
+    read -rp $'\e[33mWhich Brewfile would you like to use? (f)ull | (e)ssential | (n)one : \e[39m' confirm
+
+    if [[ $confirm =~ ^[Ee]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+    elif [[ $confirm =~ ^[Ff]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+    else
+      notify "Not using a Brewfile. Skipping..."
+    fi
+
+  elif [[ $brewfile_essential ]]; then
+
+    read -rp $'\e[33mWould you like to install packages from Brewfile (essential) (y/N): \e[39m' confirm
+
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+    else
+      notify "Not using a Brewfile. Skipping..."
+    fi
+
+  elif [[ $brewfile_full ]]; then
+    read -rp $'\e[33mWould you like to install packages from Brewfile (full) (y/N): \e[39m' confirm
+
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+    else
+      notify "Not using a Brewfile. Skipping..."
+    fi
+
+  else
+    notify "Brewfile not found. Skipping..."
+  fi
 fi
 
-unset -v confirm brewfile_essential brewfile_full
+unset -v confirm brewfile brewfile_essential brewfile_full
 
 # TODO: install other packages
 # TODO: add prompts to ask user if they want to install these packages
@@ -352,7 +570,7 @@ if ! command_exists nvim; then
 fi
 
 git clone \
-  --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
+  --config core.sshCommand="ssh -i ~/.ssh/${identity}" \
   git@github.com:peter-bread/peter.nvim.git "$XDG_CONFIG_HOME/nvim"
 
 # 1. launch without ui
@@ -367,11 +585,11 @@ nvim --headless \
 
 # Finishing Up ----------------------------------------------------------------
 
-unset -v keyfile
+unset -v identity
 
 echo
-success "Bootstrap complete!"
+quiet=0 success "Bootstrap complete!"
 echo
-notify "Restart your shell for changes to take effect."
+quiet=0 notify "Restart your shell for changes to take effect."
 
 exit 0
