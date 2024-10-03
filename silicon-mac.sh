@@ -196,10 +196,12 @@ done
 
 # Validate Options ------------------------------------------------------------
 
-if ! validate_ssh_key_name "$identity"; then
-  error "Error: Invalid SSH key name!"
-  error "Can only contain: lowercase letters, digits, underscores, hyphens."
-  exit 1
+if [[ -n $identity ]]; then
+  if ! validate_ssh_key_name "$identity"; then
+    error "Error: Invalid SSH key name!"
+    error "Can only contain: lowercase letters, digits, underscores, hyphens."
+    exit 1
+  fi
 fi
 
 if [[ -n $brewfile ]]; then
