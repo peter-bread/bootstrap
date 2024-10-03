@@ -203,6 +203,10 @@ while [[ $# -gt 0 ]]; do
     quiet=1
     shift
     ;;
+  *)
+    error "Error: unrecognised option: $1"
+    exit 1
+    ;;
   esac
 done
 
