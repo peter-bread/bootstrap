@@ -38,10 +38,3 @@ With options:
 ```sh
 curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh | bash -s -- [options]
 ```
-
-With logging:
-
-```sh
-curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh |
-  bash >bootstrap-output.log 2>bootstrap-error.log
-```
