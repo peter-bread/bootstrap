@@ -95,6 +95,7 @@ function show_help() {
   echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
   echo "  -b <value>, --brewfile[=<value>]          Which Brewfile to use ((f)ull | (e)ssential | (n)one)"
   echo "  -q, --quiet                               Suppress non-error output"
+  echo "  --no-dotfiles                             Don't install or apply dotfiles"
 }
 
 # Bootstrap ===================================================================
@@ -105,6 +106,7 @@ email=""
 identity=""
 brewfile=""
 quiet=0
+no_dotfiles=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -201,6 +203,12 @@ while [[ $# -gt 0 ]]; do
   # quiet
   -q | --quiet)
     quiet=1
+    shift
+    ;;
+
+  # no dotfiles
+  --no-dotfiles)
+    no_dotfiles=1
     shift
     ;;
   *)
@@ -384,38 +392,44 @@ success "SSH authenticated with GitHub!"
 
 # Dotfiles --------------------------------------------------------------------
 
-notify "Attempting to clone dotfiles..."
-
-if [[ ! -d $DOTFILES ]]; then
-  git clone \
-    --config core.sshCommand="ssh -i ~/.ssh/${identity}" \
-    git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+if [[ $no_dotfiles -eq 1 ]]; then
+  notify "Chose to not install dotfiles. Skipping..."
 else
-  notify "Dotfiles repository already exists. Pulling latest changes..."
-  cd "$DOTFILES" && git pull
-fi
 
-success "Dotfiles repo cloned and up to date!"
+  notify "Attempting to clone dotfiles..."
 
-# change into dotfiles repo to install dotfiles
-cd "$DOTFILES" || exit 1
+  if [[ ! -d $DOTFILES ]]; then
+    git clone \
+      --config core.sshCommand="ssh -i ~/.ssh/${identity}" \
+      git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
+  else
+    notify "Dotfiles repository already exists. Pulling latest changes..."
+    cd "$DOTFILES" && git pull
+  fi
 
-if [[ -f $DOTFILES/install.sh ]]; then
-  notify "Installing dotfiles..."
-  echo
-  echo
-  if ! bash "$DOTFILES"/install.sh; then
-    error "Error: Dotfiles installation failed!"
+  success "Dotfiles repo cloned and up to date!"
+
+  # change into dotfiles repo to install dotfiles
+  cd "$DOTFILES" || exit 1
+
+  if [[ -f $DOTFILES/install.sh ]]; then
+    notify "Installing dotfiles..."
+    echo
+    echo
+    if ! bash "$DOTFILES"/install.sh; then
+      error "Error: Dotfiles installation failed!"
+      exit 1
+    fi
+    echo
+    echo
+  else
+    error "Error: No install.sh found in $DOTFILES!"
     exit 1
   fi
-  echo
-  echo
-else
-  error "Error: No install.sh found in $DOTFILES!"
-  exit 1
-fi
 
-success "Dotfiles installed successfully!"
+  success "Dotfiles installed successfully!"
+
+fi
 
 # Software Installation -------------------------------------------------------
 
