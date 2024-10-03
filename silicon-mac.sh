@@ -291,7 +291,7 @@ fi
 
 notify "Creating a new ed25519 SSH key pair for GitHub..."
 
-generate_ssh_key "$keyfile" "$email"
+generate_ssh_key "$identity" "$email"
 
 if ! command_exists gh; then
   brew install gh
