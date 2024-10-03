@@ -42,11 +42,11 @@ function success() {
 }
 
 function warn() {
-  echo -e "${yellow}${bold}${1}${default}${reset}"
+  echo -e "${yellow}${bold}${1}${default}${reset}" >&2
 }
 
 function error() {
-  echo -e "${red}${1}${default}"
+  echo -e "${red}${1}${default}" >&2
 }
 
 function command_exists() {
