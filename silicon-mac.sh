@@ -88,6 +88,7 @@ function show_help() {
   echo "Options:"
   echo "  -h, --help                          Display this help and exit"
   echo "  -e <value>, --email[=<value>]       Specify email for GitHub SSH key"
+  echo "  -i <file>, --identity[=<file>]      Specify filename for GitHub SSH key"
 }
 
 # Bootstrap ===================================================================
@@ -95,13 +96,17 @@ function show_help() {
 # Parse Options ---------------------------------------------------------------
 
 email=""
+identity=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+  # help
   -h | --help)
     show_help
     exit 0
     ;;
+
+  # email
   -e)
     if [[ -n $2 && $2 != -* ]]; then
       email=$2
@@ -124,6 +129,49 @@ while [[ $# -gt 0 ]]; do
     email="${1#--email=}"
     if [[ -z $email ]]; then
       error "Error: --email requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
+    ;;
+
+  # identity
+  -i)
+    if [[ -n $2 && $2 != -* ]]; then
+      identity=$2
+      if ! validate_ssh_key_name "$identity"; then
+        error "Error: Invalid SSH key name!"
+        error "Can only contain: lowercase letters, digits, underscores, hyphens."
+        exit 1
+      fi
+      shift 2
+    else
+      error "Error: -i requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --identity)
+    if [[ -n $2 && $2 != -* ]]; then
+      identity=$2
+      if ! validate_ssh_key_name "$identity"; then
+        error "Error: Invalid SSH key name!"
+        error "Can only contain: lowercase letters, digits, underscores, hyphens."
+        exit 1
+      fi
+      shift 2
+    else
+      error "Error: --identity requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --identity=*)
+    identity="${1#--identity=}"
+    if [[ -z $identity ]]; then
+      error "Error: --identity requires a non-empty argument." >&2
+      exit 1
+    fi
+    if ! validate_ssh_key_name "$identity"; then
+      error "Error: Invalid SSH key name!"
+      error "Can only contain: lowercase letters, digits, underscores, hyphens."
       exit 1
     fi
     shift
@@ -212,18 +260,24 @@ notify "Setting up Git and GitHub..."
 
 notify "Requesting key filename and email for GitHub SSH key..."
 
-# get valid filename for new github ssh key
-while true; do
-  read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' keyfile
+if [[ -n $identity ]]; then
+  success "SSH identity file name passed in on command line. Skipping..."
+else
 
-  if validate_ssh_key_name "$keyfile"; then
-    success "Valid SSH key name!"
-    break
-  else
-    error "Error: Invalid SSH key name!"
-    error "Can only contain: lowercase letters, digits, underscores, hyphens."
-  fi
-done
+  # get valid filename for new github ssh key
+  while true; do
+    read -rp $'\e[33mName for SSH key (stored in $HOME/.ssh/<your_key_name>): \e[39m' identity
+
+    if validate_ssh_key_name "$identity"; then
+      success "Valid SSH key name!"
+      break
+    else
+      error "Error: Invalid SSH key name!"
+      error "Can only contain: lowercase letters, digits, underscores, hyphens."
+    fi
+  done
+
+fi
 
 if [[ -n $email ]]; then
   success "Email passed in on command line. Skipping..."
@@ -248,12 +302,12 @@ echo
 warn "WARNING: When asked if you would like to add an SSH key to your account, select SKIP."
 
 github_login
-github_add_ssh_key "$keyfile"
+github_add_ssh_key "$identity"
 github_reset_scope
 
 unset -v email
 
-ssh -i "$HOME/.ssh/${keyfile}" -T git@github.com
+ssh -i "$HOME/.ssh/${identity}" -T git@github.com
 
 exit_code="$?"
 
@@ -272,7 +326,7 @@ notify "Attempting to clone dotfiles..."
 
 if [[ ! -d $DOTFILES ]]; then
   git clone \
-    --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
+    --config core.sshCommand="ssh -i ~/.ssh/${identity}" \
     git@github.com:peter-bread/.dotfiles.git "$DOTFILES"
 else
   notify "Dotfiles repository already exists. Pulling latest changes..."
@@ -409,7 +463,7 @@ if ! command_exists nvim; then
 fi
 
 git clone \
-  --config core.sshCommand="ssh -i ~/.ssh/${keyfile}" \
+  --config core.sshCommand="ssh -i ~/.ssh/${identity}" \
   git@github.com:peter-bread/peter.nvim.git "$XDG_CONFIG_HOME/nvim"
 
 # 1. launch without ui
@@ -424,7 +478,7 @@ nvim --headless \
 
 # Finishing Up ----------------------------------------------------------------
 
-unset -v keyfile
+unset -v identity
 
 echo
 success "Bootstrap complete!"
