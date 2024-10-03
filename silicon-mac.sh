@@ -588,8 +588,8 @@ nvim --headless \
 unset -v identity
 
 echo
-success "Bootstrap complete!"
+quiet=0 success "Bootstrap complete!"
 echo
-notify "Restart your shell for changes to take effect."
+quiet=0 notify "Restart your shell for changes to take effect."
 
 exit 0
