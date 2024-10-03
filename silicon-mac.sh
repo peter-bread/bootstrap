@@ -89,6 +89,7 @@ function show_help() {
   echo "  -h, --help                                Display this help and exit"
   echo "  -e <value>, --email[=<value>]             Specify email for GitHub SSH key"
   echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
+  echo "  -b <value>, --brewfile[=<value>]          Which Brewfile to use ((f)ull | (e)ssential | (n)one)"
 }
 
 # Bootstrap ===================================================================
@@ -97,6 +98,7 @@ function show_help() {
 
 email=""
 identity=""
+brewfile=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -161,6 +163,34 @@ while [[ $# -gt 0 ]]; do
     fi
     shift
     ;;
+
+  # brewfile
+  -b)
+    if [[ -n $2 && $2 != -* ]]; then
+      brewfile=$2
+      shift 2
+    else
+      error "Error: -b requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --brewfile)
+    if [[ -n $2 && $2 != -* ]]; then
+      brewfile=$2
+      shift 2
+    else
+      error "Error: --brewfile requires a non-empty argument" >&2
+      exit 1
+    fi
+    ;;
+  --brewfile=*)
+    brewfile="${1#--brewfile=}"
+    if [[ -z $brewfile ]]; then
+      error "Error: --brewfile requires a non-empty argument." >&2
+      exit 1
+    fi
+    shift
+    ;;
   esac
 done
 
@@ -170,6 +200,29 @@ if ! validate_ssh_key_name "$identity"; then
   error "Error: Invalid SSH key name!"
   error "Can only contain: lowercase letters, digits, underscores, hyphens."
   exit 1
+fi
+
+if [[ -n $brewfile ]]; then
+  case $brewfile in
+  f | F | full)
+    brewfile="f"
+    ;;
+  e | E | essential)
+    brewfile="e"
+    ;;
+  n | N | none)
+    brewfile="n"
+    ;;
+  *)
+    brewfile="invalid"
+    ;;
+  esac
+
+  if [[ $brewfile == "invalid" ]]; then
+    error "Error: invalid Brewfile!"
+    error "Accepted values: [ f | F | full ]; [ e | E | essential ]; [ n | N | none ]"
+    exit 1
+  fi
 fi
 
 # Checks ----------------------------------------------------------------------
@@ -366,43 +419,74 @@ if [[ -f $DOTFILES/homebrew/Brewfile_full ]]; then
   brewfile_full=true
 fi
 
-if [[ $brewfile_essential && $brewfile_full ]]; then
-  success "Two Brewfiles found!"
-
-  read -rp $'\e[33mWhich Brewfile would you like to use? (e)ssential | (f)ull | (n)either : \e[39m' confirm
-
-  if [[ $confirm =~ ^[Ee]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
-  elif [[ $confirm =~ ^[Ff]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
-  else
+if [[ -n $brewfile ]]; then
+  case $brewfile in
+  f)
+    if [[ $brewfile_full == true ]]; then
+      notify "Installing packages from Brewfile (full)..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+    else
+      error "Error: Brewfile not found!"
+      exit 1
+    fi
+    ;;
+  e)
+    if [[ $brewfile_essential == true ]]; then
+      notify "Installing packages from Brewfile (essential)..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+    else
+      error "Error: Brewfile not found!"
+      exit 1
+    fi
+    ;;
+  n)
     notify "Not using a Brewfile. Skipping..."
-  fi
-
-elif [[ $brewfile_essential ]]; then
-
-  read -rp $'\e[33mWould you like to install packages from Brewfile (essential) (y/N): \e[39m' confirm
-
-  if [[ $confirm =~ ^[Yy]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
-  fi
-
-elif [[ $brewfile_full ]]; then
-  read -rp $'\e[33mWould you like to install packages from Brewfile (full) (y/N): \e[39m' confirm
-
-  if [[ $confirm =~ ^[Yy]$ ]]; then
-    notify "Installing packages from Brewfile..."
-    brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
-  fi
-
+    ;;
+  esac
 else
-  notify "Brewfile not found. Skipping..."
+
+  if [[ $brewfile_essential && $brewfile_full ]]; then
+    success "Two Brewfiles found!"
+
+    read -rp $'\e[33mWhich Brewfile would you like to use? (f)ull | (e)ssential | (n)one : \e[39m' confirm
+
+    if [[ $confirm =~ ^[Ee]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+    elif [[ $confirm =~ ^[Ff]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+    else
+      notify "Not using a Brewfile. Skipping..."
+    fi
+
+  elif [[ $brewfile_essential ]]; then
+
+    read -rp $'\e[33mWould you like to install packages from Brewfile (essential) (y/N): \e[39m' confirm
+
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+    else
+      notify "Not using a Brewfile. Skipping..."
+    fi
+
+  elif [[ $brewfile_full ]]; then
+    read -rp $'\e[33mWould you like to install packages from Brewfile (full) (y/N): \e[39m' confirm
+
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      notify "Installing packages from Brewfile..."
+      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+    else
+      notify "Not using a Brewfile. Skipping..."
+    fi
+
+  else
+    notify "Brewfile not found. Skipping..."
+  fi
 fi
 
-unset -v confirm brewfile_essential brewfile_full
+unset -v confirm brewfile brewfile_essential brewfile_full
 
 # TODO: install other packages
 # TODO: add prompts to ask user if they want to install these packages
