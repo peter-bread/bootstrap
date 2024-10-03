@@ -64,7 +64,7 @@ function generate_ssh_key() {
 # Web login to github. Automatically sets git protocol to ssh and requests
 # public_key scope so ssh keys can be added later.
 function github_login() {
-  gh auth login --hostname GitHub.com \
+  gh auth login --hostname GitHub.com --skip-ssh-key \
     --git-protocol ssh --scopes "admin:public_key" --web
 }
 
@@ -344,8 +344,6 @@ if ! command_exists gh; then
 fi
 
 notify "Authenticating with GitHub via browser..."
-echo
-warn "WARNING: When asked if you would like to add an SSH key to your account, select SKIP."
 
 github_login
 github_add_ssh_key "$identity"
