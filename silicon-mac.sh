@@ -86,9 +86,9 @@ function show_help() {
   echo "  bash <script> [options]                       Run downloaded script"
   echo
   echo "Options:"
-  echo "  -h, --help                          Display this help and exit"
-  echo "  -e <value>, --email[=<value>]       Specify email for GitHub SSH key"
-  echo "  -i <file>, --identity[=<file>]      Specify filename for GitHub SSH key"
+  echo "  -h, --help                                Display this help and exit"
+  echo "  -e <value>, --email[=<value>]             Specify email for GitHub SSH key"
+  echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
 }
 
 # Bootstrap ===================================================================
