@@ -79,7 +79,25 @@ function github_reset_scope() {
   gh auth refresh --reset-scopes
 }
 
+function show_help() {
+  echo "Usage: curl/cat <file> | bash -s -- [ -h | --help ]"
+  echo
+  echo "Options:"
+  echo "  -h, --help        Display this help and exit"
+}
+
 # Bootstrap ===================================================================
+
+# Parse Options ---------------------------------------------------------------
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  -h | --help)
+    show_help
+    exit 0
+    ;;
+  esac
+done
 
 # Checks ----------------------------------------------------------------------
 
