@@ -36,10 +36,18 @@ curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-ma
 With options:
 
 ```sh
-curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh | bash -s -- [options]
+curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh |
+  bash -s -- [options]
 ```
 
-With logging:
+Copy all output to log file:
+
+```sh
+curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh |
+  bash >bootstrap.log 2>&1 | tee
+```
+
+Divert all output to log file:
 
 ```sh
 curl -sL https://raw.githubusercontent.com/peter-bread/bootstrap/main/silicon-mac.sh |
