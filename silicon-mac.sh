@@ -80,7 +80,10 @@ function github_reset_scope() {
 }
 
 function show_help() {
-  echo "Usage: curl/cat <file> | bash -s -- [ -h | --help ]"
+  echo "Usage:"
+  echo "  curl -sL <link> | bash -s -- [options]    Download & run script"
+  echo "  cat <script> | bash -s -- [options]       Run downloaded script"
+  echo "  bash <script> [options]                   Run downloaded script"
   echo
   echo "Options:"
   echo "  -h, --help        Display this help and exit"
