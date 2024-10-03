@@ -138,11 +138,6 @@ while [[ $# -gt 0 ]]; do
   -i)
     if [[ -n $2 && $2 != -* ]]; then
       identity=$2
-      if ! validate_ssh_key_name "$identity"; then
-        error "Error: Invalid SSH key name!"
-        error "Can only contain: lowercase letters, digits, underscores, hyphens."
-        exit 1
-      fi
       shift 2
     else
       error "Error: -i requires a non-empty argument" >&2
@@ -152,11 +147,6 @@ while [[ $# -gt 0 ]]; do
   --identity)
     if [[ -n $2 && $2 != -* ]]; then
       identity=$2
-      if ! validate_ssh_key_name "$identity"; then
-        error "Error: Invalid SSH key name!"
-        error "Can only contain: lowercase letters, digits, underscores, hyphens."
-        exit 1
-      fi
       shift 2
     else
       error "Error: --identity requires a non-empty argument" >&2
@@ -169,15 +159,18 @@ while [[ $# -gt 0 ]]; do
       error "Error: --identity requires a non-empty argument." >&2
       exit 1
     fi
-    if ! validate_ssh_key_name "$identity"; then
-      error "Error: Invalid SSH key name!"
-      error "Can only contain: lowercase letters, digits, underscores, hyphens."
-      exit 1
-    fi
     shift
     ;;
   esac
 done
+
+# Validate Options ------------------------------------------------------------
+
+if ! validate_ssh_key_name "$identity"; then
+  error "Error: Invalid SSH key name!"
+  error "Can only contain: lowercase letters, digits, underscores, hyphens."
+  exit 1
+fi
 
 # Checks ----------------------------------------------------------------------
 
