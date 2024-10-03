@@ -86,11 +86,8 @@ function show_help() {
   echo "  bash <script> [options]                   Run downloaded script"
   echo
   echo "Options:"
-  echo "  -h, --help                    Display this help and exit"
-  echo "  -e <value>                    Specify email for github ssh key"
-  echo "  -e=<value>                    Specify email for github ssh key"
-  echo "  --email <value>               Specify email for github ssh key"
-  echo "  --email=<value>               Specify email for github ssh key"
+  echo "  -h, --help                          Display this help and exit"
+  echo "  -e <value>, --email[=<value>]       Specify email for GitHub SSH key"
 }
 
 # Bootstrap ===================================================================
@@ -122,14 +119,6 @@ while [[ $# -gt 0 ]]; do
       error "Error: --email requires a non-empty argument" >&2
       exit 1
     fi
-    ;;
-  -e=*)
-    email="${1#-e=}"
-    if [[ -z $email ]]; then
-      error "Error: -e requires a non-empty argument." >&2
-      exit 1
-    fi
-    shift
     ;;
   --email=*)
     email="${1#--email=}"
