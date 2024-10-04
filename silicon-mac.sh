@@ -441,11 +441,11 @@ notify "Checking for Brewfile..."
 brewfile_essential=false
 brewfile_full=false
 
-if [[ -f $DOTFILES/homebrew/Brewfile_essential ]]; then
+if [[ -f $DOTFILES/packages/homebrew/Brewfile_essential ]]; then
   brewfile_essential=true
 fi
 
-if [[ -f $DOTFILES/homebrew/Brewfile_full ]]; then
+if [[ -f $DOTFILES/packages/homebrew/Brewfile_full ]]; then
   brewfile_full=true
 fi
 
@@ -454,7 +454,7 @@ if [[ -n $brewfile ]]; then
   f)
     if [[ $brewfile_full == true ]]; then
       notify "Installing packages from Brewfile (full)..."
-      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_full"
     else
       error "Error: Brewfile not found!"
       exit 1
@@ -463,7 +463,7 @@ if [[ -n $brewfile ]]; then
   e)
     if [[ $brewfile_essential == true ]]; then
       notify "Installing packages from Brewfile (essential)..."
-      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_essential"
     else
       error "Error: Brewfile not found!"
       exit 1
@@ -482,10 +482,10 @@ else
 
     if [[ $confirm =~ ^[Ee]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_essential"
     elif [[ $confirm =~ ^[Ff]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_full"
     else
       notify "Not using a Brewfile. Skipping..."
     fi
@@ -496,7 +496,7 @@ else
 
     if [[ $confirm =~ ^[Yy]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/homebrew/Brewfile_essential"
+      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_essential"
     else
       notify "Not using a Brewfile. Skipping..."
     fi
@@ -506,7 +506,7 @@ else
 
     if [[ $confirm =~ ^[Yy]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/homebrew/Brewfile_full"
+      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_full"
     else
       notify "Not using a Brewfile. Skipping..."
     fi
