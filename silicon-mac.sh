@@ -438,32 +438,35 @@ fi
 notify "Starting software installation..."
 notify "Checking for Brewfile..."
 
-brewfile_essential=false
-brewfile_full=false
+package_manager="brew"
+package_dir="$DOTFILES/packages/${package_manager}"
 
-if [[ -f $DOTFILES/packages/homebrew/Brewfile_essential ]]; then
-  brewfile_essential=true
+essential=false
+full=false
+
+if [[ -f ${package_dir}/essential ]]; then
+  essential=true
 fi
 
-if [[ -f $DOTFILES/packages/homebrew/Brewfile_full ]]; then
-  brewfile_full=true
+if [[ -f ${package_dir}/full ]]; then
+  full=true
 fi
 
 if [[ -n $brewfile ]]; then
   case $brewfile in
   f)
-    if [[ $brewfile_full == true ]]; then
+    if [[ $full == true ]]; then
       notify "Installing packages from Brewfile (full)..."
-      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_full"
+      brew bundle install --file="${package_dir}/full"
     else
       error "Error: Brewfile not found!"
       exit 1
     fi
     ;;
   e)
-    if [[ $brewfile_essential == true ]]; then
+    if [[ $essential == true ]]; then
       notify "Installing packages from Brewfile (essential)..."
-      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_essential"
+      brew bundle install --file="${package_dir}/essential"
     else
       error "Error: Brewfile not found!"
       exit 1
@@ -475,38 +478,38 @@ if [[ -n $brewfile ]]; then
   esac
 else
 
-  if [[ $brewfile_essential && $brewfile_full ]]; then
+  if [[ $essential && $full ]]; then
     success "Two Brewfiles found!"
 
     read -rp $'\e[33mWhich Brewfile would you like to use? (f)ull | (e)ssential | (n)one : \e[39m' confirm
 
     if [[ $confirm =~ ^[Ee]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_essential"
+      brew bundle install --file="${package_dir}/essential"
     elif [[ $confirm =~ ^[Ff]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_full"
+      brew bundle install --file="${package_dir}/full"
     else
       notify "Not using a Brewfile. Skipping..."
     fi
 
-  elif [[ $brewfile_essential ]]; then
+  elif [[ $essential ]]; then
 
     read -rp $'\e[33mWould you like to install packages from Brewfile (essential) (y/N): \e[39m' confirm
 
     if [[ $confirm =~ ^[Yy]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_essential"
+      brew bundle install --file="${package_dir}/essential"
     else
       notify "Not using a Brewfile. Skipping..."
     fi
 
-  elif [[ $brewfile_full ]]; then
+  elif [[ $full ]]; then
     read -rp $'\e[33mWould you like to install packages from Brewfile (full) (y/N): \e[39m' confirm
 
     if [[ $confirm =~ ^[Yy]$ ]]; then
       notify "Installing packages from Brewfile..."
-      brew bundle install --file="$DOTFILES/packages/homebrew/Brewfile_full"
+      brew bundle install --file="${package_dir}/full"
     else
       notify "Not using a Brewfile. Skipping..."
     fi
@@ -516,7 +519,7 @@ else
   fi
 fi
 
-unset -v confirm brewfile brewfile_essential brewfile_full
+unset -v confirm brewfile essential full
 
 # TODO: install other packages
 # TODO: add prompts to ask user if they want to install these packages
