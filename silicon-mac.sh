@@ -10,6 +10,7 @@ export blue="\e[34m"
 
 export bold="\e[1m"
 export reset="\e[0m"
+export ul="\e[4m"
 
 # Set important environment variables =========================================
 
@@ -84,12 +85,12 @@ function github_reset_scope() {
 }
 
 function show_help() {
-  echo "Usage:"
+  echo -e "${bold}${ul}Usage${reset}:"
   echo "  curl -sL <link> | bash [ -s -- [options] ]    Download & run script"
   echo "  cat <script> | bash [ -s -- [options] ]       Run downloaded script"
   echo "  bash <script> [options]                       Run downloaded script"
   echo
-  echo "Options:"
+  echo -e "${bold}${ul}Options${reset}:"
   echo "  -h, --help                                Display this help and exit"
   echo "  -e <value>, --email[=<value>]             Specify email for GitHub SSH key"
   echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
