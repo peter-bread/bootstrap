@@ -91,12 +91,12 @@ function show_help() {
   echo "  bash <script> [options]                       Run downloaded script"
   echo
   echo -e "${bold}${ul}Options${reset}:"
-  echo "  -h, --help                                Display this help and exit"
-  echo "  -e <value>, --email[=<value>]             Specify email for GitHub SSH key"
-  echo "  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
-  echo "  -b <value>, --brewfile[=<value>]          Which Brewfile to use ((f)ull | (e)ssential | (n)one)"
-  echo "  -q, --quiet                               Suppress non-error output"
-  echo "  --no-dotfiles                             Don't install or apply dotfiles"
+  echo "  -h, --help                              Display this help and exit"
+  echo "  -e <value>, --email=<value>             Specify email for GitHub SSH key"
+  echo "  -i <basename>, --identity=<basename>    Specify basename for GitHub SSH key (stored in ~/.ssh/<basename>)"
+  echo "  -b <value>, --brewfile=<value>          Which Brewfile to use ((f)ull | (e)ssential | (n)one)"
+  echo "  -q, --quiet                             Suppress non-error output"
+  echo "  --no-dotfiles                           Don't install or apply dotfiles"
 }
 
 # Bootstrap ===================================================================
