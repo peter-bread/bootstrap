@@ -18,13 +18,14 @@ Usage:
   bash <script> [options]                       Run downloaded script
 
 Options:
-  -h, --help                                Display this help and exit
-  -e <value>, --email[=<value>]             Specify email for GitHub SSH key
-  -i <basename>, --identity[=<basename>]    Specify basename for GitHub SSH key
-                                              (stored in ~/.ssh/<basename>)
-  -b <value>, --brewfile[=<value>]          Which Brewfile to use ((f)ull | (e)ssential | (n)one)
-  -q, --quiet                               Suppress non-error output
-  --no-dotfiles                             Don't install or apply dotfiles
+  -h, --help                              Display this help and exit
+  -e <value>, --email=<value>             Specify email for GitHub SSH key
+  -i <basename>, --identity=<basename>    Specify basename for GitHub SSH key
+                                            (stored in ~/.ssh/<basename>)
+  -b <value>, --brewfile=<value>          Which Brewfile to use
+                                            [ (f)ull | (e)ssential | (n)one ]
+  -q, --quiet                             Suppress non-error output
+  --no-dotfiles                           Don't install or apply dotfiles
 ```
 
 ## Silicon Mac
