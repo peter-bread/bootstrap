@@ -412,4 +412,34 @@ fi
 notify "Starting software installation..."
 notify "Checking for packages.txt..."
 
-xargs sudo apt-get install -y <packages.txt
+packages_essential=false
+packages_full=false
+
+if [[ -f $DOTFILES/apt/packages_essential.txt ]]; then
+  packages_essential=true
+fi
+
+if [[ -f $DOTFILES/apt/packages_full.txt ]]; then
+  packages_full=true
+fi
+
+if [[ -n $packages ]]; then
+  case $packages in
+  f)
+    if [[ $packages_full == true ]]; then
+      notify "Installing packages from packages.txt (full)..."
+      xargs sudo apt-get install -y <"$DOTFILES/apt/packages_full.txt"
+    else
+      error "Error: packages.txt not found!"
+      exit 1
+    fi
+    ;;
+  esac
+fi
+
+if ! xargs sudo apt-get install -y <packages.txt; then
+  error "Error: failed to install all packages."
+  exit 1
+fi
+
+success "Packages installed!"
