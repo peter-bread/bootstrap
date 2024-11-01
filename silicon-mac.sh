@@ -70,13 +70,22 @@ function generate_ssh_key() {
 # public_key scope so ssh keys can be added later.
 function github_login() {
   gh auth login --hostname GitHub.com --skip-ssh-key \
-    --git-protocol ssh --scopes "admin:public_key" --web
+    --git-protocol ssh \
+    --scopes "admin:public_key,admin:ssh_signing_key" \
+    --web
 }
 
 # Add ssh key to github account.
-function github_add_ssh_key() {
-  gh ssh-key add "${1}.pub" --title "$(whoami)@$(uname -n)" \
+function github_add_ssh_public_key() {
+  gh ssh-key add "${1}.pub" \
+    --title "$(whoami)@$(uname -n)" \
     --type authentication
+}
+
+function github_add_ssh_signing_key() {
+  gh ssh-key add "${1}.pub" \
+    --title "$(whoami)@$(uname -n)" \
+    --type signing
 }
 
 # Reset GH CLI auth token to minimum scope.
@@ -375,7 +384,8 @@ fi
 notify "Authenticating with GitHub via browser..."
 
 github_login
-github_add_ssh_key "$identity"
+github_add_ssh_public_key "$identity"
+github_add_ssh_signing_key "$identity"
 github_reset_scope
 
 unset -v email
