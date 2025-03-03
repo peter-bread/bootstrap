@@ -38,6 +38,17 @@ git clone --depth=1 "$REPO_URL" "$TMP_DIR"
 # source common utilities
 source "$TMP_DIR/os/common.sh"
 
+# Root user should NOT run this script
+notify "Checking privileges..."
+
+if [[ $EUID -eq 0 ]]; then
+  error "Error: this script should not be run as root."
+  error "Please run it as a regular user."
+  exit 1
+fi
+
+success "Running as regular user!"
+
 # source OS-specific scripts
 case "$OS" in
 Darwin)
