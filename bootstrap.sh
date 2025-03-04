@@ -4,6 +4,8 @@
 
 set -Eeuo pipefail
 
+cd "$HOME"
+
 REPO_URL="https://github.com/peter-bread/bootstrap"
 TMP_DIR="$HOME/.bootstrap"
 
