@@ -17,6 +17,22 @@ reset="\e[0m"
 
 # Utility functions ===========================================================
 
+# Attempt to run script in scripts directory,
+# and passes in arguments to the script.
+function run() {
+  local script="$TMP_DIR/scripts/${1}.sh"
+
+  if [[ -f $script ]]; then
+    shift
+    source "$script" "$@"
+  fi
+}
+
+function confirm() {
+  read -rp "$1 [y/N] " response
+  [[ $response =~ ^[Yy]$ ]]
+}
+
 function notify() {
   echo -e "${blue}${1}${default}"
 }
