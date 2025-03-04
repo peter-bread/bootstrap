@@ -4,12 +4,24 @@
 
 set -Eeuo pipefail
 
-cd "$HOME"
-
 REPO_URL="https://github.com/peter-bread/bootstrap"
 TMP_DIR="$HOME/.bootstrap"
 
 OS="$(uname -s)"
+
+function cleanup() {
+  if [[ -d $TMP_DIR ]]; then
+    rm -rf "$TMP_DIR"
+  fi
+}
+
+# ensure bootstrap repo is deleted whenever this script ends
+trap cleanup ERR EXIT
+
+cd "$HOME"
+
+# remove potential existing bootstrap files
+cleanup
 
 # ensure git is installed
 if ! command -v git &>/dev/null; then
@@ -29,13 +41,9 @@ fi
 
 # get bootstrap scripts
 
-# remove potential existing bootstrap files
-if [[ -d $TMP_DIR ]]; then
-  rm -rf "$TMP_DIR"
-fi
-
 echo "Cloning bootstrap scripts..."
-git clone --depth=1 "$REPO_URL" "$TMP_DIR"
+# TODO: switch back to main branch once this branch is merged
+git clone --depth=1 --branch=rewrite "$REPO_URL" "$TMP_DIR"
 
 # source common utilities
 source "$TMP_DIR/os/common.sh"
@@ -55,14 +63,9 @@ success "Running as regular user!"
 case "$OS" in
 Darwin)
   echo "Detected MacOS..."
-  source "$TMP_DIR/os/macos.sh"
+  # source "$TMP_DIR/os/macos.sh"
   ;;
   # TODO: handle other OS
 esac
-
-# cleanup
-if [[ -d $TMP_DIR ]]; then
-  rm -rf "$TMP_DIR"
-fi
 
 echo "Bootstrap complete!"
