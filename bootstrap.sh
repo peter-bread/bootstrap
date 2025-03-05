@@ -63,7 +63,7 @@ success "Running as regular user!"
 case "$OS" in
 Darwin)
   echo "Detected MacOS..."
-  # source "$TMP_DIR/os/macos.sh"
+  source "$TMP_DIR/os/macos.sh"
   ;;
   # TODO: handle other OS
 esac
