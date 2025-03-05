@@ -31,6 +31,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # update & upgrade Homebrew
 notify "Updating Homebrew..."
-brew update
+brew update --quiet
 notify "Upgrading Homebrew..."
-brew upgrade
+brew upgrade --quiet
