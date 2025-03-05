@@ -53,6 +53,9 @@ function command_exists() {
   command -v "${1}" &>/dev/null
 }
 
+# TODO: might move the ssh/github functions into their own scripts since they
+# are only needed in specific places
+
 function validate_ssh_key_name() {
   [[ $1 =~ ^[a-z0-9_-]+$ ]]
 }
