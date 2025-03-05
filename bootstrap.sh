@@ -62,10 +62,10 @@ success "Running as regular user!"
 # source OS-specific scripts
 case "$OS" in
 Darwin)
-  echo "Detected MacOS..."
+  notify "Detected MacOS..."
   source "$TMP_DIR/os/macos.sh"
   ;;
   # TODO: handle other OS
 esac
 
-echo "Bootstrap complete!"
+success "Bootstrap complete!"
