@@ -48,6 +48,8 @@ git clone --depth=1 --branch=rewrite "$REPO_URL" "$TMP_DIR"
 # source common utilities
 source "$TMP_DIR/os/common.sh"
 
+notify "${bold}Starting bootstrap...${reset}"
+
 # Root user should NOT run this script
 notify "Checking privileges..."
 
