@@ -4,8 +4,47 @@
 
 set -Eeuo pipefail
 
+# Root user should NOT run this script
+if [[ $EUID -eq 0 ]]; then
+  echo "Error: this script should not be run as root."
+  echo "Please run it as a regular user."
+  exit 1
+fi
+
+# parse command line args
+
+LOCAL=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --local)
+    LOCAL=1
+    shift
+    ;;
+  # --email)
+  #   EMAIL="$2"
+  #   shift 2
+  #   ;;
+  # --ssh-key)
+  #   SSH_KEY="$2"
+  #   shift 2
+  #   ;;
+  *)
+    echo "Unknown argument: $1"
+    exit 1
+    ;;
+  esac
+done
+
+is_local() {
+  [[ $LOCAL -ne 0 ]]
+}
+
 REPO_URL="https://github.com/peter-bread/bootstrap"
+
 TMP_DIR="$HOME/.bootstrap"
+
+is_local && TMP_DIR="."
 
 OS="$(uname -s)"
 
@@ -16,12 +55,13 @@ function cleanup() {
 }
 
 # ensure bootstrap repo is deleted whenever this script ends
-trap cleanup ERR EXIT
+! is_local && trap cleanup ERR EXIT
 
-cd "$HOME"
+# cd to home
+! is_local && cd "$HOME"
 
 # remove potential existing bootstrap files
-cleanup
+! is_local && cleanup
 
 # ensure git is installed
 if ! command -v git &>/dev/null; then
@@ -41,25 +81,21 @@ fi
 
 # get bootstrap scripts
 
-echo "Cloning bootstrap scripts..."
-# TODO: switch back to main branch once this branch is merged
-git clone --depth=1 --branch=rewrite "$REPO_URL" "$TMP_DIR"
+if ! is_local; then
+  echo "Cloning bootstrap scripts..."
+
+  # TODO: switch back to main branch once this branch is merged
+  git clone --depth=1 --branch=rewrite --quiet "$REPO_URL" "$TMP_DIR"
+fi
 
 # source common utilities
 source "$TMP_DIR/os/common.sh"
 
-notify "${bold}Starting bootstrap...${reset}"
-
-# Root user should NOT run this script
-notify "Checking privileges..."
-
-if [[ $EUID -eq 0 ]]; then
-  error "Error: this script should not be run as root."
-  error "Please run it as a regular user."
-  exit 1
+if is_local; then
+  notify "${bold}Starting bootstrap (locally)...${reset}"
+else
+  notify "${bold}Starting bootstrap...${reset}"
 fi
-
-success "Running as regular user!"
 
 # source OS-specific scripts
 case "$OS" in
