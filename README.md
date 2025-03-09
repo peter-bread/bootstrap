@@ -11,6 +11,6 @@ Bootstrap scripts to set up on different systems with minimal effort.
 
 ## Usage
 
-| Flag    | Args | Optional | Description                            |
-| ------- | ---- | -------- | -------------------------------------- |
-| --local | none | ✅       | Run latest changes from local git repo |
+| Flag      | Args | Optional | Description                                                    |
+| --------- | ---- | -------- | -------------------------------------------------------------- |
+| `--local` | none | ✅       | Run latest changes from local git repo, i.e. do not clone this |
