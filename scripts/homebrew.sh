@@ -2,8 +2,6 @@
 
 # Make sure Homebrew is installed
 
-# WARN: assumes apple silicon
-
 set -Eeuo pipefail
 
 notify "Checking if Homebrew is installed..."
