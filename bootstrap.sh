@@ -47,6 +47,7 @@ TMP_DIR="$HOME/.bootstrap"
 is_local && TMP_DIR="."
 
 OS="$(uname -s)"
+ARCH=$(uname -m)
 
 function cleanup() {
   if [[ -d $TMP_DIR ]]; then

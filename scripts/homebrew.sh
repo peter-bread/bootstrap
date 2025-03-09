@@ -27,7 +27,16 @@ success "Homebrew is installed!"
 
 # set up homebrew in current shell
 notify "Setting up Homebrew in current shell..."
-eval "$(/opt/homebrew/bin/brew shellenv)"
+
+if [[ $ARCH == *"arm"* ]]; then
+  PREFIX="/opt/homebrew"
+else
+  PREFIX="/usr/local"
+fi
+
+eval "$("$PREFIX/bin/brew" shellenv)"
+
+unset -v PREFIX
 
 # update & upgrade Homebrew
 notify "Updating Homebrew..."
