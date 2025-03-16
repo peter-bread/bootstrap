@@ -21,7 +21,7 @@ curl -sLO https://raw.githubusercontent.com/peter-bread/bootstrap/refs/heads/rew
 
 Verify integrity:
 
-<!-- TODO: remember to keep this checksum up to date -->
+<!-- kept up-to-date by pre-commit hook -->
 
 ```bash
 echo "8744d5e1080ba0abbf9bbefb842909f8ed449771317fd0d3084d23fe000c8ab5  bootstrap.sh" | sha256sum --check
