@@ -5,9 +5,10 @@
 repos:
   - repo: local
     hooks:
-      - id: trailing-whitespace
+      - id: update-checksum
         name: Update bootstrap.sh checksum
         entry: bash hooks/update-checksum.sh
         language: system
         stages:
           - pre-commit
+        verbose: true
