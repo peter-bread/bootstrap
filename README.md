@@ -24,7 +24,7 @@ Verify integrity:
 <!-- TODO: remember to keep this checksum up to date -->
 
 ```bash
-echo "517c7d359aacec5665dcdbfb2bba86fa944c7dc1b5351ee9a7ccb4db9b4fc23c  bootstrap.sh" | sha256sum --check
+echo "8744d5e1080ba0abbf9bbefb842909f8ed449771317fd0d3084d23fe000c8ab5  bootstrap.sh" | sha256sum --check
 ```
 
 > [!WARNING]

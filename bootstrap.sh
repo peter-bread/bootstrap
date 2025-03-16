@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# Bootstrap entry point. Determine OS.
+# Bootstrap entry point.
+#
+# Clone bootstrap repo, run OS-specific scripts, cleanup.
 
 set -Eeuo pipefail
 
