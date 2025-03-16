@@ -36,6 +36,24 @@ echo "8744d5e1080ba0abbf9bbefb842909f8ed449771317fd0d3084d23fe000c8ab5  bootstra
 >
 > Then, try downloading again.
 
+Make executable:
+
+```bash
+chmod u+x bootstrap.sh
+```
+
+Run:
+
+```bash
+./bootstrap.sh
+```
+
+After bootstrap is complete, delete the file:
+
+```bash
+rm -f bootstrap.sh
+```
+
 | Flag      | Args | Optional | Description                                                    |
 | --------- | ---- | -------- | -------------------------------------------------------------- |
 | `--local` | none | ✅       | Run latest changes from local git repo, i.e. do not clone this |
