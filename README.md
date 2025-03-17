@@ -54,6 +54,8 @@ After bootstrap is complete, delete the file:
 rm -f bootstrap.sh
 ```
 
+### Options
+
 | Flag      | Args | Optional | Description                                                    |
 | --------- | ---- | -------- | -------------------------------------------------------------- |
 | `--local` | none | ✅       | Run latest changes from local git repo, i.e. do not clone this |
