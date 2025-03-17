@@ -28,7 +28,7 @@ echo "8744d5e1080ba0abbf9bbefb842909f8ed449771317fd0d3084d23fe000c8ab5  bootstra
 ```
 
 > [!WARNING]
-> If verification fails, DO NOT RUN the script, delete it manually instead:
+> If verification fails, **DO NOT RUN** the script, delete it manually instead:
 >
 > ```bash
 > rm -f bootstrap.sh
